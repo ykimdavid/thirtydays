@@ -1,0 +1,10 @@
+{% extends 'task/layout.html' %}
+
+{% block content %}
+<h3> My Habits </h3>
+<ul class="collection">
+  {% for habit in habit_list %}
+    <li class="collection-item"><a href="/task/{{habit.id}}">{{habit.habit_name}}</a></li>
+  {% endfor %}
+</ul>
+{% endblock %}

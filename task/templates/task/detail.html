@@ -1,0 +1,14 @@
+{% extends 'task/layout.html' %}
+
+{% block content %}
+<h3> {{habit.habit_name}} </h3>
+<ul class="collection">
+  <li class="collection-item">Description: {{habit.habit_desc}}</li>
+  <li class="collection-item">Priority: {{habit.habit_priority}}</li>
+  <li class="collection-item">Days Left: {{habit.days_left}}</li>
+  <li class="collection-item">Start Date: {{habit.start_date}}</li>
+
+</ul>
+
+<a href="\task" class="btn">Go Back</a>
+{% endblock %}
