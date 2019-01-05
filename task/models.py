@@ -11,32 +11,45 @@ class Habit(models.Model):
     habit_desc = models.TextField()
     habit_priority = models.IntegerField()
     completed = models.BooleanField(default = False)
+    active = models.BooleanField(default = True)
 
     def __str__(self):
         return self.habit_name
 
 
-    def active(self):
-        current_date = self.start_date + datetime.timedelta(days = self.day_counter)
-        midnight = datetime.datetime(current_date.year, current_date.month, current_date.day + 1, 0, 0, 0)
+    def update(self):
         now = datetime.datetime.now()
+        if self.active:
+            current_date = self.start_date + datetime.timedelta(days = self.day_counter)
+            midnight = datetime.datetime(current_date.year, current_date.month, current_date.day + 1, 0, 0, 0)
 
-        if  now > midnight:
-            if self.completed == False:
-                self.day_counter = 0
-                self.start_date = current_date
-            else:
-                self.day_counter += 1
-                self.completed = False
+            if  now > midnight:
+                if self.completed == False:
+                    self.day_counter = 0
+                    self.start_date = current_date
+                else:
+                    self.day_counter += 1
+                    self.completed = False
+
+        else:
+            if self.start_date <= now.date():
+                self.active = True
 
         self.save()
 
-    def initializeOldHabit(self):
+
+    def initializeHabit(self):
         today = datetime.datetime.now().date()
+        if self.start_date > today:
+            self.active = False
+
         if self.start_date < today:
             elapsed = today - self.start_date
             self.day_counter = elapsed.days
-            self.save()
+
+        self.save()
+
+
 
 class AddForm(ModelForm):
     class Meta:

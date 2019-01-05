@@ -22,18 +22,18 @@ def index(request):
             print(delete)
             habit = get_object_or_404(Habit, pk = delete)
             habit.delete()
-            
+
 
     habit_list = Habit.objects.all()
     for habit in habit_list:
-        habit.active()
+        habit.update()
 
     context = {'habit_list': habit_list}
     return render(request, 'task/index.html', context)
 
 def detail(request, id):
     for habit in Habit.objects.all():
-        habit.active()
+        habit.update()
 
     habit = get_object_or_404(Habit, pk = id)
     context = {'habit': habit}
@@ -45,7 +45,7 @@ def addHabit(request):
 
         if form.is_valid():
             newHabit = form.save()
-            newHabit.initializeOldHabit()
+            newHabit.initializeHabit()
 
             print(newHabit.day_counter)
 
