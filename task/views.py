@@ -1,12 +1,46 @@
 from django.shortcuts import render, get_object_or_404
+from django.http import HttpResponse, HttpResponseRedirect
 from .models import Habit
+from .models import AddForm
+from django.template import RequestContext
+
 # Create your views here.
 def index(request):
-    habit_list = Habit.objects.order_by('habit_priority')[:5]
+    if request.method == 'POST':
+        complete = request.POST.get('complete')
+
+        if complete:
+            print(complete)
+            habit = get_object_or_404(Habit, pk = complete)
+            print(habit.completed)
+            habit.completed = True
+            print(habit.completed)
+            habit.save()
+
+    habit_list = Habit.objects.all()
+    for habit in habit_list:
+        habit.active()
+
     context = {'habit_list': habit_list}
     return render(request, 'task/index.html', context)
 
 def detail(request, id):
+    for habit in Habit.objects.all():
+        habit.active()
+
     habit = get_object_or_404(Habit, pk = id)
     context = {'habit': habit}
     return render(request, 'task/detail.html', context)
+
+def addHabit(request):
+    if request.method == 'POST':
+        form = AddForm(request.POST)
+
+        if form.is_valid():
+            form.save()
+            return HttpResponseRedirect('/task/')
+
+    else:
+        form = AddForm()
+
+    return render(request, 'task/addHabit.html', {'form': form})

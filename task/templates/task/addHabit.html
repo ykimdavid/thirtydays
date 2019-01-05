@@ -1,0 +1,12 @@
+{% extends 'task/layout.html' %}
+
+{% block content %}
+<h3> Add a Habit </h3>
+<form action="/addform/" method="post">
+  {% csrf_token %}
+  {{ form }}
+  <a href="\task"><input class = "btn" type="submit" value="Submit"></a>
+  <a href="\task" class="btn">Go Back</a>
+</form>
+
+{% endblock %}

@@ -2,9 +2,27 @@
 
 {% block content %}
 <h3> My Habits </h3>
+<a href="/task/addform/">Add a Habit</a>
 <ul class="collection">
   {% for habit in habit_list %}
-    <li class="collection-item"><a href="/task/{{habit.id}}">{{habit.habit_name}}</a></li>
+      <li class="collection-item avatar">
+        <span class="title"><a href="/task/{{habit.id}}">{{habit.habit_name}}</a></span>
+        <p>Priority: {{habit.habit_priority}} <br>
+          Description: {{habit.habit_desc}} <br>
+          Days Completed: {{habit.day_counter }}
+        </p>
+        <form method = "post">
+          {% csrf_token %}
+          <a class="secondary-content">
+            <button type="submit" name="complete" value="{{habit.id}}">Complete</button> <br>
+            <button type="submit" name="delete" value="{{habit.id}}">Delete</button> <br>
+            <button type="submit" name="Edit" value="{{habit.id}}">Edit</button>
+          </a>
+
+
+        </form>
+      </li>
+
   {% endfor %}
 </ul>
 {% endblock %}
