@@ -8,6 +8,7 @@ from django.template import RequestContext
 def index(request):
     if request.method == 'POST':
         complete = request.POST.get('complete')
+        delete = request.POST.get('delete')
 
         if complete:
             print(complete)
@@ -16,6 +17,12 @@ def index(request):
             habit.completed = True
             print(habit.completed)
             habit.save()
+
+        if delete:
+            print(delete)
+            habit = get_object_or_404(Habit, pk = delete)
+            habit.delete()
+            
 
     habit_list = Habit.objects.all()
     for habit in habit_list:
@@ -37,7 +44,11 @@ def addHabit(request):
         form = AddForm(request.POST)
 
         if form.is_valid():
-            form.save()
+            newHabit = form.save()
+            newHabit.initializeOldHabit()
+
+            print(newHabit.day_counter)
+
             return HttpResponseRedirect('/task/')
 
     else:

@@ -21,6 +21,9 @@ class Habit(models.Model):
         midnight = datetime.datetime(current_date.year, current_date.month, current_date.day + 1, 0, 0, 0)
         now = datetime.datetime.now()
 
+        print("Current Date: ", current_date)
+        print("Midnight: ", midnight)
+
         if  now > midnight:
             print('update')
             if self.completed == False:
@@ -33,6 +36,13 @@ class Habit(models.Model):
             print('no update')
         self.save()
 
+    def initializeOldHabit(self):
+        today = datetime.datetime.now().date()
+        if self.start_date != today:
+            print("DEBUG: ", today, self.start_date)
+            elapsed = today - self.start_date
+            self.day_counter = elapsed.days
+            self.save()
 
 class AddForm(ModelForm):
     class Meta:
