@@ -6,7 +6,7 @@
 
 <br>
   <div class="row">
-  {% for habit in habit_list %}
+  {% for habit in incomplete_habit %}
     <div class="col s6">
       <div class="card hoverable">
         <div class="card-content">
@@ -19,8 +19,8 @@
             {% csrf_token %}
             <button class="btn-floating" type="submit" name="delete" value="{{habit.id}}">
               <i class="material-icons">delete</i></button>
-            <button class="btn-floating" type="submit" name="edit" value="{{habit.id}}">
-              <i class="material-icons">edit</i></button>
+            <a href="/editform/{{habit.id}}/" class="btn-floating">
+              <i class="material-icons">edit</i></a>
             <button class="btn-floating" type="submit" name="complete" value="{{habit.id}}">
               <i class="material-icons">check</i></button>
           </form>
@@ -30,6 +30,32 @@
       </div>
     </div>
   {% endfor %}
+
+  {% for habit in complete_habit %}
+    <div class="col s6">
+      <div class="card grey lighten-3 hoverable">
+        <div class="card-content">
+        <span class="card-title"><a href="/task/{{habit.id}}">{{habit.habit_name}}</a></span>
+        Days Completed: {{ habit.day_counter }}
+
+
+        <div class="right valign-wrapper">
+          <form method = "post">
+            {% csrf_token %}
+            <button class="btn-floating" type="submit" name="delete" value="{{habit.id}}">
+              <i class="material-icons">delete</i></button>
+            <a href="/editform/{{habit.id}}/" class="btn-floating">
+              <i class="material-icons">edit</i></a>
+            <button class="btn-floating disabled" type="submit" name="complete" value="{{habit.id}}">
+              <i class="material-icons">check</i></button>
+          </form>
+        </div>
+
+      </div>
+      </div>
+    </div>
+  {% endfor %}
+
 </div>
 {% endblock %}
 

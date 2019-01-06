@@ -1,10 +1,21 @@
 from django.db import models
-from django.forms import ModelForm
+from django.forms import ModelForm, ChoiceField, Select
 from django.utils import timezone
 import datetime
 
 # Create your models here.
 class Habit(models.Model):
+    HIGH = 1
+    MEDIUM = 2
+    LOW = 3
+
+    PRIORITY_CHOICES = (
+        (HIGH, 'High'),
+        (MEDIUM, 'Medium'),
+        (LOW, 'Low'),
+    )
+
+
     habit_name = models.CharField(max_length=200)
     start_date = models.DateField()
     day_counter = models.IntegerField(default = 0)
@@ -54,4 +65,4 @@ class Habit(models.Model):
 class AddForm(ModelForm):
     class Meta:
         model = Habit
-        fields = ['habit_name', 'start_date', 'habit_desc', 'habit_priority']
+        exclude = ('day_counter', 'completed', 'active')

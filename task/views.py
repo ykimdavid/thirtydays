@@ -23,12 +23,18 @@ def index(request):
             habit = get_object_or_404(Habit, pk = delete)
             habit.delete()
 
-
-    habit_list = Habit.objects.all()
+    habit_list = Habit.objects.all().order_by('habit_priority')
     for habit in habit_list:
         habit.update()
 
-    context = {'habit_list': habit_list}
+    incomplete = habit_list.filter(completed=False)
+    complete = habit_list.filter(completed=True)
+
+    #context = {'habit_list': habit_list}
+    context = {
+        'complete_habit': complete,
+        'incomplete_habit': incomplete,
+    }
     return render(request, 'task/index.html', context)
 
 def detail(request, id):
@@ -47,11 +53,20 @@ def addHabit(request):
             newHabit = form.save()
             newHabit.initializeHabit()
 
-            print(newHabit.day_counter)
-
             return HttpResponseRedirect('/task/')
 
     else:
         form = AddForm()
 
     return render(request, 'task/addHabit.html', {'form': form})
+
+def editHabit(request, id):
+    habit = get_object_or_404(Habit, pk = id)
+    form = AddForm(request.POST or None, instance=habit)
+    print(habit.habit_name)
+    if form.is_valid():
+        form.save()
+        habit.initializeHabit()
+        return HttpResponseRedirect('/task/')
+
+    return render(request, 'task/editHabit.html', {'form': form, 'id':habit.id})

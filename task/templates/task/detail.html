@@ -1,17 +1,14 @@
 {% extends 'task/layout.html' %}
 
 {% block content %}
-<h3> {{habit.habit_name}} </h3>
-<ul class="collection">
-  <li class="collection-item">Description: {{habit.habit_desc}}</li>
-  <li class="collection-item">Priority: {{habit.habit_priority}}</li>
-  <li class="collection-item">Days Completed: {{habit.day_counter}}</li>
-  <li class="collection-item">Start Date: {{habit.start_date}}</li>
-  <li class="collection-item">[DEBUG] Completed: {{habit.completed}}</li>
+<h4 class="center-align"> {{habit.habit_name}} </h4>
+<div class="container"> <p>
+  <h6>Description:</h6> {{habit.habit_desc}} <br>
+  <h6>Priority:</h6> {{habit.habit_priority}} <br>
+  <h6>Days Completed:</h6> {{habit.day_counter}} <br>
+  <h6>Start Date:</h6> {{habit.start_date}} <br>
+</p>
 
-
-
-</ul>
-
+<a href="/task/editform/{{habit.id}}/" class="btn">Edit</a>
 <a href="\task" class="btn">Go Back</a>
 {% endblock %}
