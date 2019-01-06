@@ -1,27 +1,59 @@
 {% extends 'task/layout.html' %}
 
 {% block content %}
-<h4> my habits </h4>
-<ul class="collection">
+
+<h4 class="center-align"> My Habits </h4>
+
+<br>
+  <div class="row">
   {% for habit in habit_list %}
-      <li class="collection-item avatar">
-        <span class="title"><a href="/task/{{habit.id}}">{{habit.habit_name}}</a></span>
-        <p>Priority: {{habit.habit_priority}} <br>
-          Description: {{habit.habit_desc}} <br>
-          Days Completed: {{habit.day_counter }}
-        </p>
-        <form method = "post">
-          {% csrf_token %}
+    <div class="col s6">
+      <div class="card hoverable">
+        <div class="card-content">
+        <span class="card-title"><a href="/task/{{habit.id}}">{{habit.habit_name}}</a></span>
+        Days Completed: {{ habit.day_counter }}
+
+
+        <div class="right valign-wrapper">
+          <form method = "post">
+            {% csrf_token %}
+            <button class="btn-floating" type="submit" name="delete" value="{{habit.id}}">
+              <i class="material-icons">delete</i></button>
+            <button class="btn-floating" type="submit" name="edit" value="{{habit.id}}">
+              <i class="material-icons">edit</i></button>
+            <button class="btn-floating" type="submit" name="complete" value="{{habit.id}}">
+              <i class="material-icons">check</i></button>
+          </form>
+        </div>
+
+      </div>
+      </div>
+    </div>
+  {% endfor %}
+</div>
+{% endblock %}
+
+
+<!--
+      <li class="collection-item">
+        <span class="title"><a href="/task/{{habit.id}}"><h6>{{habit.habit_name}}</h6></a></span>
           <a class="secondary-content">
-            <button type="submit" name="complete" value="{{habit.id}}">Complete</button> <br>
-            <button type="submit" name="delete" value="{{habit.id}}">Delete</button> <br>
-            <button type="submit" name="Edit" value="{{habit.id}}">Edit</button>
+            <form method = "post">
+              {% csrf_token %}
+              <button class="btn-floating" type="submit" name="delete" value="{{habit.id}}">
+                <i class="material-icons">delete</i></button>
+              <button class="btn-floating" type="submit" name="edit" value="{{habit.id}}">
+                <i class="material-icons">edit</i></button>
+              <button class="btn-floating" type="submit" name="complete" value="{{habit.id}}">
+                <i class="material-icons">check</i></button>
+            </form>
           </a>
 
-
-        </form>
+          Days Completed: {{habit.day_counter }} <br>
+          <br>
       </li>
 
-  {% endfor %}
+
 </ul>
-{% endblock %}
+
+-->
