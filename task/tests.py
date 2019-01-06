@@ -1,5 +1,7 @@
 from django.test import TestCase
 from task.models import Habit
+from django.urls import reverse
+
 import datetime
 
 
@@ -66,7 +68,7 @@ class HabitTests(TestCase):
 
         current_date = today - datetime.timedelta(days = 2)
         self.assertIs(habit.day_counter, 0)
-        self.assertIs(habit.start_date == current_date, True)
+        self.assertEqual(habit.start_date, current_date)
 
 
     def testUpdate_noUpdate(self):
@@ -75,7 +77,7 @@ class HabitTests(TestCase):
         habit.update()
         today = datetime.datetime.now().date()
         self.assertIs(habit.day_counter, 0)
-        self.assertIs(habit.start_date == today, True)
+        self.assertEqual(habit.start_date, today)
         self.assertIs(habit.completed, False)
 
     def testFutureHabit(self):
@@ -84,7 +86,7 @@ class HabitTests(TestCase):
         futuredate = datetime.datetime.now().date() + datetime.timedelta(days = 10)
 
         self.assertIs(habit.day_counter, 0)
-        self.assertIs(habit.start_date == futuredate, True)
+        self.assertEqual(habit.start_date, futuredate)
         self.assertIs(habit.active, False)
 
     def testUpdate_futureHabit(self):
@@ -96,4 +98,82 @@ class HabitTests(TestCase):
         self.assertIs(habit.active, True)
 
 
-# Create your tests here.
+class HabitIndexViewTests(TestCase):
+    def test_no_habits(self):
+        response = self.client.get(reverse('Habits'))
+        self.assertEqual(response.status_code, 200)
+        completed = response.context['complete_habit']
+        incompleted = response.context['incomplete_habit']
+
+        self.assertQuerysetEqual(completed, [])
+        self.assertQuerysetEqual(incompleted, [])
+
+    def test_incomplete_habits(self):
+        habit1 = create_habit(name='habit1')
+        habit2 = create_habit(name='habit2')
+        habit3 = create_habit(name='habit3')
+
+        response = self.client.get(reverse('Habits'))
+        self.assertEqual(response.status_code, 200)
+
+        completed = response.context['complete_habit']
+        incompleted = response.context['incomplete_habit']
+
+        self.assertQuerysetEqual(completed, [])
+        self.assertQuerysetEqual(incompleted, ['<Habit: habit1>', '<Habit: habit2>', '<Habit: habit3>'])
+
+    def test_complete_habits(self):
+        habit1 = create_habit(name='habit1', completed=True)
+        habit2 = create_habit(name='habit2', completed=True)
+        habit3 = create_habit(name='habit3')
+
+        response = self.client.get(reverse('Habits'))
+        self.assertEqual(response.status_code, 200)
+
+        completed = response.context['complete_habit']
+        incompleted = response.context['incomplete_habit']
+
+        self.assertQuerysetEqual(completed, ['<Habit: habit1>', '<Habit: habit2>'])
+        self.assertQuerysetEqual(incompleted, ['<Habit: habit3>'])
+
+    def test_completion(self):
+        habit1 = create_habit(name='habit1', completed=True)
+        habit2 = create_habit(name='habit2', completed=True)
+        habit3 = create_habit(name='habit3')
+
+        response = self.client.get(reverse('Habits'))
+        self.assertEqual(response.status_code, 200)
+
+        completed = response.context['complete_habit']
+        incompleted = response.context['incomplete_habit']
+
+        self.assertQuerysetEqual(completed, ['<Habit: habit1>', '<Habit: habit2>'])
+        self.assertQuerysetEqual(incompleted, ['<Habit: habit3>'])
+
+
+        response = self.client.post(reverse('Habits'), {'complete': habit3.id})
+        self.assertEqual(response.status_code, 200)
+        completed = response.context['complete_habit']
+        incompleted = response.context['incomplete_habit']
+        self.assertQuerysetEqual(completed, ['<Habit: habit1>', '<Habit: habit2>', '<Habit: habit3>'])
+        self.assertQuerysetEqual(incompleted, [])
+
+    def test_deletion(self):
+        habit1 = create_habit(name='habit1', completed=True)
+        habit2 = create_habit(name='habit2', completed=True)
+        habit3 = create_habit(name='habit3')
+        response = self.client.get(reverse('Habits'))
+        self.assertEqual(response.status_code, 200)
+        completed = response.context['complete_habit']
+        self.assertQuerysetEqual(completed, ['<Habit: habit1>', '<Habit: habit2>'])
+
+        response = self.client.post(reverse('Habits'), {'delete': habit1.id})
+        self.assertEqual(response.status_code, 200)
+        completed = response.context['complete_habit']
+        self.assertQuerysetEqual(completed, ['<Habit: habit2>'])
+
+
+#TODO Test the order of habits by priority
+#TODO Test detail view
+#TODO Test addHabit Form
+#TODO Test editHabit Form 

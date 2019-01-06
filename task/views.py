@@ -11,15 +11,11 @@ def index(request):
         delete = request.POST.get('delete')
 
         if complete:
-            print(complete)
             habit = get_object_or_404(Habit, pk = complete)
-            print(habit.completed)
             habit.completed = True
-            print(habit.completed)
             habit.save()
 
         if delete:
-            print(delete)
             habit = get_object_or_404(Habit, pk = delete)
             habit.delete()
 
