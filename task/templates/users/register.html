@@ -6,6 +6,7 @@
       {% csrf_token %}
       {{ form.as_p }}
       <a href="\task"><input class="btn" type="submit" value="Register"></a>
+      <a href="{% url 'login' %}" class="btn">Log In</a>
     </form>
   </div>
 

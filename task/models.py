@@ -66,4 +66,4 @@ class Habit(models.Model):
 class AddForm(ModelForm):
     class Meta:
         model = Habit
-        exclude = ('day_counter', 'completed', 'active')
+        exclude = ('day_counter', 'completed', 'active', 'user')
