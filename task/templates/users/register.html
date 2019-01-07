@@ -1,0 +1,12 @@
+{% extends 'users/layout.html' %}
+
+{% block content %}
+  <div class="container">
+    <form action="/register/" method="POST">
+      {% csrf_token %}
+      {{ form.as_p }}
+      <a href="\task"><input class="btn" type="submit" value="Register"></a>
+    </form>
+  </div>
+
+{% endblock %}

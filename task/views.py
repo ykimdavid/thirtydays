@@ -4,8 +4,10 @@ from .models import Habit
 from .models import AddForm
 from django.template import RequestContext
 
-# Create your views here.
 def index(request):
+    current_user = request.user
+
+
     if request.method == 'POST':
         complete = request.POST.get('complete')
         delete = request.POST.get('delete')
@@ -30,6 +32,7 @@ def index(request):
     context = {
         'complete_habit': complete,
         'incomplete_habit': incomplete,
+        'user': current_user,
     }
     return render(request, 'task/index.html', context)
 

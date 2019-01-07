@@ -1,0 +1,12 @@
+{% extends 'users/layout.html' %}
+
+{% block content %}
+  <div class="container">
+    <form action="/login/" method="POST">
+      {% csrf_token %}
+      {{ form.as_p }}
+      <a href="\task"><input class="btn" type="submit" value="Log In"></a>
+    </form>
+  </div>
+
+{% endblock %}

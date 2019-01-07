@@ -4,6 +4,7 @@ from django.urls import reverse
 
 import datetime
 
+USER_PASSWORD = "testing321"
 
 def create_habit(name="testHabit", days=0, desc="description", priority=1, completed=False):
     """ Create a habit with 'days' number of days offset from now. Set days as
@@ -22,7 +23,9 @@ def create_habit(name="testHabit", days=0, desc="description", priority=1, compl
 
     return habit
 
-
+def create_user(username = 'testuser'):
+    user = User.objects.create_user(username=username, password=USER_PASSWORD)
+    return user
 
 class HabitTests(TestCase):
     def testDayCounter(self):
@@ -172,8 +175,14 @@ class HabitIndexViewTests(TestCase):
         completed = response.context['complete_habit']
         self.assertQuerysetEqual(completed, ['<Habit: habit2>'])
 
+    # def check_user_auth(self):
+    #     self.user = create_user('testuser')
+    #     login = self.client.login('testuser', USER_PASSWORD)
+    #     response = self.client.get(reverse('Habits'))
+    #
+    #
 
 #TODO Test the order of habits by priority
 #TODO Test detail view
 #TODO Test addHabit Form
-#TODO Test editHabit Form 
+#TODO Test editHabit Form
