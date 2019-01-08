@@ -3,13 +3,11 @@ from django.http import HttpResponse, HttpResponseRedirect
 from .models import Habit
 from .models import AddForm
 from django.template import RequestContext
+from django.contrib.auth.decorators import login_required
 
-
+@login_required(login_url='/login/')
 def index(request):
     current_user = request.user
-    if not current_user.is_authenticated:
-        return redirect('login')
-
     if request.method == 'POST':
         complete = request.POST.get('complete')
         delete = request.POST.get('delete')
@@ -22,27 +20,21 @@ def index(request):
             habit = get_object_or_404(Habit, pk = delete)
             habit.delete()
 
-    habit_list = Habit.objects.filter(user=current_user).order_by('habit_priority')
+    habit_list = Habit.objects.filter(user=current_user).order_by('-habit_priority')
 
     for habit in habit_list:
         habit.update()
 
     incomplete = habit_list.filter(completed=False)
     complete = habit_list.filter(completed=True)
-
-    #context = {'habit_list': habit_list}
     context = {
         'complete_habit': complete,
         'incomplete_habit': incomplete,
-        'user': current_user,
     }
     return render(request, 'task/index.html', context)
 
+@login_required(login_url='/login/')
 def detail(request, id):
-    current_user = request.user
-    if not current_user.is_authenticated:
-        return redirect('login')
-
     for habit in Habit.objects.all():
         habit.update()
 
@@ -50,11 +42,9 @@ def detail(request, id):
     context = {'habit': habit}
     return render(request, 'task/detail.html', context)
 
+@login_required(login_url='/login/')
 def addHabit(request):
     current_user = request.user
-    if not current_user.is_authenticated:
-        return redirect('login')
-
     if request.method == 'POST':
         form = AddForm(request.POST)
 
@@ -70,14 +60,10 @@ def addHabit(request):
 
     return render(request, 'task/addHabit.html', {'form': form})
 
+@login_required(login_url='/login/')
 def editHabit(request, id):
-    current_user = request.user
-    if not current_user.is_authenticated:
-        return redirect('login')
-
     habit = get_object_or_404(Habit, pk = id)
     form = AddForm(request.POST or None, instance=habit)
-    print(habit.habit_name)
     if form.is_valid():
         form.save()
         habit.initializeHabit()

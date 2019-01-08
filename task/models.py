@@ -1,18 +1,18 @@
 from django.db import models
-from django.forms import ModelForm, ChoiceField, Select
+from django.forms import ModelForm, SelectDateWidget, DateField
 from django.utils import timezone
 from django.contrib.auth.models import User
 import datetime
 
 class Habit(models.Model):
-    HIGH = 1
-    MEDIUM = 2
-    LOW = 3
+    LOW = 0
+    NORMAL = 1
+    HIGH = 2
 
     PRIORITY_CHOICES = (
-        (HIGH, 'High'),
-        (MEDIUM, 'Medium'),
         (LOW, 'Low'),
+        (NORMAL, 'Normal'),
+        (HIGH, 'High'),
     )
 
     user = models.ForeignKey(User, on_delete=models.CASCADE)
@@ -20,7 +20,7 @@ class Habit(models.Model):
     start_date = models.DateField()
     day_counter = models.IntegerField(default = 0)
     habit_desc = models.TextField()
-    habit_priority = models.IntegerField()
+    habit_priority = models.IntegerField(choices=PRIORITY_CHOICES, default=NORMAL)
     completed = models.BooleanField(default = False)
     active = models.BooleanField(default = True)
     last_update = models.DateField(null=True)
@@ -67,4 +67,7 @@ class Habit(models.Model):
 class AddForm(ModelForm):
     class Meta:
         model = Habit
-        exclude = ('day_counter', 'completed', 'active', 'user')
+        exclude = ('day_counter', 'completed', 'active', 'user', 'last_update')
+        widgets = {
+            'start_date': SelectDateWidget()
+        }

@@ -1,6 +1,12 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+  {% block css %}
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0-rc.1/css/materialize.min.css" integrity="sha256-qj3p6P1fJIV+Ndv7RW1ovZI2UhOuboj9GcODzcNFIN8=" crossorigin="anonymous" />
+{% endblock css %}
+
+
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
@@ -20,6 +26,26 @@
   </style>
 </head>
 <body>
+  {% block javascript %}
+<script
+src="https://code.jquery.com/jquery-3.3.1.min.js"
+integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
+crossorigin="anonymous"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0-rc.1/js/materialize.min.js" integrity="sha256-SrBfGi+Zp2LhAvy9M1bWOCXztRU9Ztztxmu5BcYPcPE=" crossorigin="anonymous"></script>
+
+<script>
+$(document).ready(function(){
+
+// Initialize materialize data picker
+$('.datepicker').datepicker({'format': 'yyyy-mm-dd'});
+$('select').formSelect();
+
+});
+
+</script>
+
+{% endblock javascript %}
 
   <ul id="slide-out" class="sidenav sidenav-fixed">
     <li><h3 class="center-align">thirtydays</h3></li>
@@ -27,8 +53,9 @@
     <li><a class="waves-effect" href="#"><i class="material-icons">person</i> Profile </a></li>
     <li><a class="waves-effect" href="#"><i class="material-icons">settings</i> Settings </a></li>
     <li><a class="waves-effect" href="{% url 'logout' %}"><i class="material-icons">arrow_back</i> Log Out </a></li>
+    {% if user.is_superuser %}
     <li><a class="waves-effect" href="/admin"><i class="material-icons">supervisor_account</i> Admin Login </a></li>
-
+    {% endif %}
   </ul>
 
   <main>

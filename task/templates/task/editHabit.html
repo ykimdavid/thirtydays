@@ -5,8 +5,8 @@
 <div class="container">
 <form action="/editform/{{id}}/" method="post">
   {% csrf_token %}
-  {{ form }}
-  <a href="\task"><input class = "btn" type="submit" value="Edit"></a>
+  {{ form.as_p }}
+  <a href="\task"><input class = "btn" type="submit" value="Submit"></a>
   <a href="\task" class="btn">Go Back</a>
 </form>
 </div>

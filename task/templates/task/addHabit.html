@@ -1,11 +1,14 @@
 {% extends 'task/layout.html' %}
 
+{% load materializecss %}
+
 {% block content %}
 <h4 class="center-align"> Add a Habit </h4>
 <div class="container">
 <form action="/addform/" method="post">
   {% csrf_token %}
-  {{ form }}
+  {{ form.as_p }}
+
   <a href="\task"><input class = "btn" type="submit" value="Submit"></a>
   <a href="\task" class="btn">Go Back</a>
 </form>
