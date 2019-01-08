@@ -4,7 +4,6 @@ from django.utils import timezone
 from django.contrib.auth.models import User
 import datetime
 
-# Create your models here.
 class Habit(models.Model):
     HIGH = 1
     MEDIUM = 2
@@ -29,7 +28,6 @@ class Habit(models.Model):
     def __str__(self):
         return self.habit_name
 
-
     def update(self):
         today = datetime.datetime.now().date()
         if self.active:
@@ -45,29 +43,6 @@ class Habit(models.Model):
 
         self.last_update = today
         self.save()
-
-        # now = datetime.datetime.now()
-        # if self.active:
-        #     current_date = self.start_date = datetime.timedelta(days = self.day_counter)
-        #     if self.completed:
-        #         current_date = self.start_date + datetime.timedelta(days = self.day_counter - 1)
-        #
-        #     next_day = datetime.datetime(current_date.year, current_date.month, current_date.day + 1, 0, 0, 0)
-        #     if self.completed:
-        #         next_day = datetime.datetime(current_date.year, current_date.month, current_date.day, 0, 0, 0)
-        #     if  now > next_day:
-        #         if self.completed == False:
-        #             self.day_counter = 0
-        #             self.start_date = current_date
-        #         else:
-        #             #self.day_counter += 1
-        #             self.completed = False
-        #
-        # else:
-        #     if self.start_date <= now.date():
-        #         self.active = True
-        #
-        # self.save()
 
     def complete(self):
         if not self.completed:

@@ -3,10 +3,7 @@ from task.models import Habit
 from django.urls import reverse
 from django.contrib.auth.models import User
 from freezegun import freeze_time
-
 import datetime
-
-USER_PASSWORD = "testing321"
 
 def create_habit(user, name="testHabit", days=0, desc="description", priority=1, completed=False):
     """ Create a habit with 'days' number of days offset from now. Set days as
@@ -19,10 +16,12 @@ def create_habit(user, name="testHabit", days=0, desc="description", priority=1,
         start_date = date,
         habit_desc = desc,
         habit_priority = priority,
-        completed = completed
+        completed = False,
     )
 
     habit.initializeHabit()
+    if completed:
+        habit.complete()
 
     return habit
 
@@ -116,7 +115,7 @@ class HabitTests(TestCase):
         login = self.client.login(username='testuser', password='12345')
         habit = create_habit(user=user, days = 10)
         self.assertIs(habit.active, False)
-        
+
         futuredate = habit.start_date + datetime.timedelta(days = 10)
         with freeze_time(futuredate):
             habit.update()
@@ -125,6 +124,8 @@ class HabitTests(TestCase):
 
 class HabitIndexViewTests(TestCase):
     def test_no_habits(self):
+        user = User.objects.create_user(username='testuser', password='12345')
+        login = self.client.login(username='testuser', password='12345')
         response = self.client.get(reverse('Habits'))
         self.assertEqual(response.status_code, 200)
         completed = response.context['complete_habit']
@@ -134,9 +135,11 @@ class HabitIndexViewTests(TestCase):
         self.assertQuerysetEqual(incompleted, [])
 
     def test_incomplete_habits(self):
-        habit1 = create_habit(name='habit1')
-        habit2 = create_habit(name='habit2')
-        habit3 = create_habit(name='habit3')
+        user = User.objects.create_user(username='testuser', password='12345')
+        login = self.client.login(username='testuser', password='12345')
+        habit1 = create_habit(user=user, name='habit1')
+        habit2 = create_habit(user=user, name='habit2')
+        habit3 = create_habit(user=user, name='habit3')
 
         response = self.client.get(reverse('Habits'))
         self.assertEqual(response.status_code, 200)
@@ -148,9 +151,11 @@ class HabitIndexViewTests(TestCase):
         self.assertQuerysetEqual(incompleted, ['<Habit: habit1>', '<Habit: habit2>', '<Habit: habit3>'])
 
     def test_complete_habits(self):
-        habit1 = create_habit(name='habit1', completed=True)
-        habit2 = create_habit(name='habit2', completed=True)
-        habit3 = create_habit(name='habit3')
+        user = User.objects.create_user(username='testuser', password='12345')
+        login = self.client.login(username='testuser', password='12345')
+        habit1 = create_habit(user=user, name='habit1', completed=True)
+        habit2 = create_habit(user=user, name='habit2', completed=True)
+        habit3 = create_habit(user=user, name='habit3')
 
         response = self.client.get(reverse('Habits'))
         self.assertEqual(response.status_code, 200)
@@ -162,9 +167,11 @@ class HabitIndexViewTests(TestCase):
         self.assertQuerysetEqual(incompleted, ['<Habit: habit3>'])
 
     def test_completion(self):
-        habit1 = create_habit(name='habit1', completed=True)
-        habit2 = create_habit(name='habit2', completed=True)
-        habit3 = create_habit(name='habit3')
+        user = User.objects.create_user(username='testuser', password='12345')
+        login = self.client.login(username='testuser', password='12345')
+        habit1 = create_habit(user=user, name='habit1', completed=True)
+        habit2 = create_habit(user=user, name='habit2', completed=True)
+        habit3 = create_habit(user=user, name='habit3')
 
         response = self.client.get(reverse('Habits'))
         self.assertEqual(response.status_code, 200)
@@ -175,7 +182,6 @@ class HabitIndexViewTests(TestCase):
         self.assertQuerysetEqual(completed, ['<Habit: habit1>', '<Habit: habit2>'])
         self.assertQuerysetEqual(incompleted, ['<Habit: habit3>'])
 
-
         response = self.client.post(reverse('Habits'), {'complete': habit3.id})
         self.assertEqual(response.status_code, 200)
         completed = response.context['complete_habit']
@@ -184,9 +190,11 @@ class HabitIndexViewTests(TestCase):
         self.assertQuerysetEqual(incompleted, [])
 
     def test_deletion(self):
-        habit1 = create_habit(name='habit1', completed=True)
-        habit2 = create_habit(name='habit2', completed=True)
-        habit3 = create_habit(name='habit3')
+        user = User.objects.create_user(username='testuser', password='12345')
+        login = self.client.login(username='testuser', password='12345')
+        habit1 = create_habit(user=user, name='habit1', completed=True)
+        habit2 = create_habit(user=user, name='habit2', completed=True)
+        habit3 = create_habit(user=user, name='habit3')
         response = self.client.get(reverse('Habits'))
         self.assertEqual(response.status_code, 200)
         completed = response.context['complete_habit']
