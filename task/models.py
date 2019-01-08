@@ -24,31 +24,56 @@ class Habit(models.Model):
     habit_priority = models.IntegerField()
     completed = models.BooleanField(default = False)
     active = models.BooleanField(default = True)
+    last_update = models.DateField(null=True)
 
     def __str__(self):
         return self.habit_name
 
 
     def update(self):
-        now = datetime.datetime.now()
+        today = datetime.datetime.now().date()
         if self.active:
-            current_date = self.start_date + datetime.timedelta(days = self.day_counter)
-            midnight = datetime.datetime(current_date.year, current_date.month, current_date.day + 1, 0, 0, 0)
-
-            if  now > midnight:
-                if self.completed == False:
-                    self.day_counter = 0
-                    self.start_date = current_date
-                else:
-                    self.day_counter += 1
+            if today > self.last_update:
+                if self.completed:
                     self.completed = False
-
+                else:
+                    self.day_counter = 0
+                    self.start_date = today
         else:
-            if self.start_date <= now.date():
+            if self.start_date <= today:
                 self.active = True
 
+        self.last_update = today
         self.save()
 
+        # now = datetime.datetime.now()
+        # if self.active:
+        #     current_date = self.start_date = datetime.timedelta(days = self.day_counter)
+        #     if self.completed:
+        #         current_date = self.start_date + datetime.timedelta(days = self.day_counter - 1)
+        #
+        #     next_day = datetime.datetime(current_date.year, current_date.month, current_date.day + 1, 0, 0, 0)
+        #     if self.completed:
+        #         next_day = datetime.datetime(current_date.year, current_date.month, current_date.day, 0, 0, 0)
+        #     if  now > next_day:
+        #         if self.completed == False:
+        #             self.day_counter = 0
+        #             self.start_date = current_date
+        #         else:
+        #             #self.day_counter += 1
+        #             self.completed = False
+        #
+        # else:
+        #     if self.start_date <= now.date():
+        #         self.active = True
+        #
+        # self.save()
+
+    def complete(self):
+        if not self.completed:
+            self.completed = True
+            self.day_counter += 1
+            self.save()
 
     def initializeHabit(self):
         today = datetime.datetime.now().date()
@@ -59,6 +84,7 @@ class Habit(models.Model):
             elapsed = today - self.start_date
             self.day_counter = elapsed.days
 
+        self.last_update = today
         self.save()
 
 

@@ -16,8 +16,7 @@ def index(request):
 
         if complete:
             habit = get_object_or_404(Habit, pk = complete)
-            habit.completed = True
-            habit.save()
+            habit.complete()
 
         if delete:
             habit = get_object_or_404(Habit, pk = delete)
