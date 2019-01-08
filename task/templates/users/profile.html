@@ -1,0 +1,12 @@
+{% extends 'task/layout.html' %}
+
+{% block content %}
+<h4 class="center-align"> {{ user }}'s Profile </h4>
+
+<div class="container">
+    <img width="200" height="200" src="{{ user.profile.image.url }}">
+        {{ user.username }}
+        <br>
+        <a href="\task" class="btn">Go Back</a>
+  </div>
+{% endblock content %}
