@@ -49,9 +49,11 @@ $('select').formSelect();
 
   <ul id="slide-out" class="sidenav sidenav-fixed">
     <li><h3 class="center-align">thirtydays</h3></li>
-    <li><a class="waves-effect" href="/task/addform/"><i class="material-icons">add</i>Add a Habit</a></li>
+    <li><a class="waves-effect" href="/task/addform/"><i class="material-icons">add</i>Add a Habit</a></li><br>
     <li><a class="waves-effect" href="{% url 'profile' %}"><i class="material-icons">person</i> Profile </a></li>
-    <li><a class="waves-effect" href="#"><i class="material-icons">settings</i> Settings </a></li>
+    <li><a class="waves-effect" href="#"><i class="material-icons">event</i> Month View </a></li>
+    <li><a class="waves-effect" href="#"><i class="material-icons">data_usage</i> Analytics </a></li>
+    <li><a class="waves-effect" href="{% url 'user_settings' %}"><i class="material-icons">settings</i> Settings </a></li>
     <li><a class="waves-effect" href="{% url 'logout' %}"><i class="material-icons">arrow_back</i> Log Out </a></li>
     {% if user.is_superuser %}
     <li><a class="waves-effect" href="/admin"><i class="material-icons">supervisor_account</i> Admin Login </a></li>

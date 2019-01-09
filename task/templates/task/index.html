@@ -4,6 +4,11 @@
 <h4 class="center-align"> {{ user }}'s Habits </h4>
 
 <br>
+  {% if is_empty %}
+
+  <div class="center-align grey-text text-darken-1">You have no habits. Click 'Add a Habit' to begin! </div>
+
+  {% endif %}
   <div class="row">
   {% for habit in incomplete_habit %}
     <div class="col s6">

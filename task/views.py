@@ -25,11 +25,16 @@ def index(request):
     for habit in habit_list:
         habit.update()
 
+    is_empty = False
+    if not habit_list:
+        is_empty = True
+
     incomplete = habit_list.filter(completed=False)
     complete = habit_list.filter(completed=True)
     context = {
         'complete_habit': complete,
         'incomplete_habit': incomplete,
+        'is_empty': is_empty,
     }
     return render(request, 'task/index.html', context)
 
@@ -70,3 +75,7 @@ def editHabit(request, id):
         return HttpResponseRedirect('/task/')
 
     return render(request, 'task/editHabit.html', {'form': form, 'id':habit.id})
+
+@login_required(login_url='/login/')
+def user_settings(request):
+    return render(request, 'task/settings.html')

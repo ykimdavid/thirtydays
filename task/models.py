@@ -17,7 +17,7 @@ class Habit(models.Model):
 
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     habit_name = models.CharField(max_length=200, unique=True)
-    start_date = models.DateField()
+    start_date = models.DateField(default=datetime.date.today)
     day_counter = models.IntegerField(default = 0)
     habit_desc = models.TextField()
     habit_priority = models.IntegerField(choices=PRIORITY_CHOICES, default=NORMAL)
@@ -69,5 +69,5 @@ class AddForm(ModelForm):
         model = Habit
         exclude = ('day_counter', 'completed', 'active', 'user', 'last_update')
         widgets = {
-            'start_date': SelectDateWidget()
+            'start_date': SelectDateWidget(years=range(datetime.date.today().year - 10, datetime.date.today().year + 10))
         }
