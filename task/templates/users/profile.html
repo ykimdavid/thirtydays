@@ -7,6 +7,15 @@
     <img width="200" height="200" src="{{ user.profile.image.url }}">
         {{ user.username }}
         <br>
-        <a href="\task" class="btn">Go Back</a>
+        <h5> Profile Info </h5>
+        <form method="POST" enctype="multipart/form-data">
+          {% csrf_token %}
+            {{ u_form.as_p }}
+            {{ p_form.as_p }}
+            <a href="\task"><input class = "btn" type="submit" value="Update"></a>
+            <a href="\task" class="btn">Go Back</a>
+        </form>
+
   </div>
+
 {% endblock content %}

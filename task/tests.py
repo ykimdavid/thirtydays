@@ -3,7 +3,10 @@ from task.models import Habit
 from django.urls import reverse
 from django.contrib.auth.models import User
 from freezegun import freeze_time
+from django.db.utils import IntegrityError
+from django.db import transaction, IntegrityError
 import datetime
+
 
 def create_habit(user, name="testHabit", days=0, desc="description", priority=1, completed=False):
     """ Create a habit with 'days' number of days offset from now. Set days as
@@ -54,13 +57,13 @@ class HabitTests(TestCase):
         habit.complete()
         self.assertEqual(habit.start_date, today)
         self.assertIs(habit.day_counter, 1)
-        self.assertIs(habit.completed, True)
+        self.assertTrue(habit.completed)
 
         tomorrow = today + datetime.timedelta(days = 1)
         with freeze_time(tomorrow):
             habit.update()
             self.assertIs(habit.day_counter, 1)
-            self.assertIs(habit.completed, False)
+            self.assertFalse(habit.completed)
 
 
     def testUpdate_update_notcompleted(self):
@@ -119,7 +122,14 @@ class HabitTests(TestCase):
         futuredate = habit.start_date + datetime.timedelta(days = 10)
         with freeze_time(futuredate):
             habit.update()
-            self.assertIs(habit.active, True)
+            self.assertTrue(habit.active)
+
+    def testDuplicateHabit(self):
+        user = User.objects.create_user(username='testuser', password='12345')
+        login = self.client.login(username='testuser', password='12345')
+        habit = create_habit(user=user)
+        with transaction.atomic():
+            self.assertRaises(IntegrityError, lambda: create_habit(user=user))
 
 
 class HabitIndexViewTests(TestCase):
@@ -205,14 +215,65 @@ class HabitIndexViewTests(TestCase):
         completed = response.context['complete_habit']
         self.assertQuerysetEqual(completed, ['<Habit: habit2>'])
 
-    # def check_user_auth(self):
-    #     self.user = create_user('testuser')
-    #     login = self.client.login('testuser', USER_PASSWORD)
-    #     response = self.client.get(reverse('Habits'))
-    #
-    #
+    def test_priority_order(self):
+        user = User.objects.create_user(username='testuser', password='12345')
+        login = self.client.login(username='testuser', password='12345')
+        habit1 = create_habit(user=user, name='habit1', priority = Habit.LOW)
+        habit2 = create_habit(user=user, name='habit2', priority = Habit.NORMAL)
+        habit3 = create_habit(user=user, name='habit3', priority = Habit.HIGH)
+        habit1c = create_habit(user=user, name='habit1c', priority = Habit.LOW, completed=True)
+        habit2c = create_habit(user=user, name='habit2c', priority = Habit.NORMAL, completed=True)
+        habit3c = create_habit(user=user, name='habit3c', priority = Habit.HIGH, completed=True)
 
-#TODO Test the order of habits by priority
-#TODO Test detail view
-#TODO Test addHabit Form
-#TODO Test editHabit Form
+
+        response = self.client.get(reverse('Habits'))
+        self.assertEqual(response.status_code, 200)
+        completed = response.context['complete_habit']
+        incompleted = response.context['incomplete_habit']
+        self.assertQuerysetEqual(incompleted, ['<Habit: habit3>', '<Habit: habit2>', '<Habit: habit1>'])
+        self.assertQuerysetEqual(completed, ['<Habit: habit3c>', '<Habit: habit2c>', '<Habit: habit1c>'])
+
+class HabitDetailViewTests(TestCase):
+    def requireLogin(self):
+        response = self.client.get(reverse('detail', kwargs={'id':1}))
+        self.assertEqual(response.status_code, 302)
+
+    def nonExistentID(self):
+        user = User.objects.create_user(username='testuser', password='12345')
+        login = self.client.login(username='testuser', password='12345')
+        habit1 = create_habit(user=user, name='habit1')
+        id = habit1.id + 1
+        self.assertNotEqual(habit.id, id)
+        response = self.client.get(reverse('detail', kwargs={'id': id}))
+        self.assertEqual(response.status_code, 404)
+
+class HabitAddHabitTests(TestCase):
+    def requireLogin(self):
+        response = self.client.get(reverse('add_habit'))
+        self.assertEqual(response.status_code, 302)
+
+    def testAdd1(self):
+        user = User.objects.create_user(username='testuser', password='12345')
+        login = self.client.login(username='testuser', password='12345')
+
+        form_input = {
+            'habit_name' : 'testHabit1',
+            'start_date' : '2019-01-01',
+            'habit_desc' : 'description',
+            'habit_priority' : Habit.LOW,
+        }
+
+        response = self.client.post(reverse('add_habit'), form_input)
+        self.assertEqual(response.status_code, 302)
+        habit = Habit.objects.get(habit_name='testHabit1')
+        self.assertEqual(habit.habit_name, 'testHabit1')
+        sample_date = datetime.date(2019, 1, 1)
+        self.assertEqual(habit.start_date, sample_date)
+        self.assertEqual(habit.habit_desc, 'description')
+        self.assertEqual(habit.habit_priority, Habit.LOW)
+
+
+class HabitEditHabitTests(TestCase):
+    def requireLogin(self):
+        response = self.client.get(reverse('edit_habit'))
+        self.assertEqual(response.status_code, 302)

@@ -16,7 +16,7 @@ class Habit(models.Model):
     )
 
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    habit_name = models.CharField(max_length=200)
+    habit_name = models.CharField(max_length=200, unique=True)
     start_date = models.DateField()
     day_counter = models.IntegerField(default = 0)
     habit_desc = models.TextField()
