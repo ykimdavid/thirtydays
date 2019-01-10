@@ -26,7 +26,7 @@ development = True
 if not development:
     SECRET_KEY = os.environ['SECRET_KEY']
     DEBUG = False
-    ALLOWED_HOSTS = ['community.pythonanywhere.com']
+    ALLOWED_HOSTS = ['ykimdavid.pythonanywhere.com']
 
 if development:
     DEBUG = True

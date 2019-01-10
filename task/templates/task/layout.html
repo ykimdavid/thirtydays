@@ -40,6 +40,9 @@ crossorigin="anonymous"></script>
     right: inherit;
     left: 50%;
 }
+a {
+  color:inherit;
+}
 </style>
 <script>
 $(document).ready(function(){
@@ -55,8 +58,8 @@ $('select').formSelect();
 {% endblock javascript %}
 
   <ul id="slide-out" class="sidenav sidenav-fixed">
-    <li><h3 class="center-align">thirtydays</h3></li>
-    <li><a class="waves-effect" href="/task/addform/"><i class="material-icons">add</i>Add a Habit</a></li><br>
+    <li><h3 class="center-align"><a href="{% url 'index' %}">thirtydays</a></h3></li>
+    <li><a class="waves-effect" href="{% url 'add_habit' %}"><i class="material-icons">add</i>Add a Habit</a></li><br>
     <li><a class="waves-effect" href="{% url 'profile' %}"><i class="material-icons">person</i> Profile </a></li>
     <li><a class="waves-effect" href="#"><i class="material-icons">event</i> Month View </a></li>
     <li><a class="waves-effect" href="#"><i class="material-icons">data_usage</i> Analytics </a></li>
