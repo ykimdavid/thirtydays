@@ -4,7 +4,7 @@ from users import views as user_views
 from django.contrib.auth import views as auth_views
 
 urlpatterns = [
-    path('', views.index, name = "Habits"),
+    path('', views.index, name = 'index'),
     path('<int:id>/', views.detail, name = 'detail'),
     path('addform/', views.addHabit, name = 'add_habit'),
     path('editform/<int:id>/', views.editHabit, name = 'edit_habit'),

@@ -19,7 +19,7 @@ class Habit(models.Model):
     habit_name = models.CharField(max_length=200, unique=True)
     start_date = models.DateField(default=datetime.date.today)
     day_counter = models.IntegerField(default = 0)
-    habit_desc = models.TextField()
+    habit_desc = models.TextField(blank=True)
     habit_priority = models.IntegerField(choices=PRIORITY_CHOICES, default=NORMAL)
     completed = models.BooleanField(default = False)
     active = models.BooleanField(default = True)

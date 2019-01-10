@@ -4,8 +4,9 @@ from .models import Habit
 from .models import AddForm
 from django.template import RequestContext
 from django.contrib.auth.decorators import login_required
+from django.contrib import messages
 
-@login_required(login_url='/login/')
+@login_required
 def index(request):
     current_user = request.user
     if request.method == 'POST':
@@ -15,10 +16,14 @@ def index(request):
         if complete:
             habit = get_object_or_404(Habit, pk = complete)
             habit.complete()
+            messages.success(request, f'{habit.habit_name} was completed successfully')
+            return redirect('index')
 
         if delete:
             habit = get_object_or_404(Habit, pk = delete)
             habit.delete()
+            messages.success(request, f'{habit.habit_name} was deleted successfully')
+            return redirect('index')
 
     habit_list = Habit.objects.filter(user=current_user).order_by('-habit_priority')
 
@@ -57,8 +62,8 @@ def addHabit(request):
             newHabit = form.save(commit=False)
             newHabit.user = current_user
             newHabit.initializeHabit()
-
-            return HttpResponseRedirect('/task/')
+            messages.success(request, f'{habit.habit_name} was created successfully')
+            return redirect('index')
 
     else:
         form = AddForm()
@@ -72,7 +77,8 @@ def editHabit(request, id):
     if form.is_valid():
         form.save()
         habit.initializeHabit()
-        return HttpResponseRedirect('/task/')
+        messages.success(request, f'{habit.habit_name} was edited successfully')
+        return redirect('index')
 
     return render(request, 'task/editHabit.html', {'form': form, 'id':habit.id})
 

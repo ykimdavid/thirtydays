@@ -136,7 +136,7 @@ class HabitIndexViewTests(TestCase):
     def test_no_habits(self):
         user = User.objects.create_user(username='testuser', password='12345')
         login = self.client.login(username='testuser', password='12345')
-        response = self.client.get(reverse('Habits'))
+        response = self.client.get(reverse('index'))
         self.assertEqual(response.status_code, 200)
         completed = response.context['complete_habit']
         incompleted = response.context['incomplete_habit']
@@ -151,7 +151,7 @@ class HabitIndexViewTests(TestCase):
         habit2 = create_habit(user=user, name='habit2')
         habit3 = create_habit(user=user, name='habit3')
 
-        response = self.client.get(reverse('Habits'))
+        response = self.client.get(reverse('index'))
         self.assertEqual(response.status_code, 200)
 
         completed = response.context['complete_habit']
@@ -167,7 +167,7 @@ class HabitIndexViewTests(TestCase):
         habit2 = create_habit(user=user, name='habit2', completed=True)
         habit3 = create_habit(user=user, name='habit3')
 
-        response = self.client.get(reverse('Habits'))
+        response = self.client.get(reverse('index'))
         self.assertEqual(response.status_code, 200)
 
         completed = response.context['complete_habit']
@@ -183,7 +183,7 @@ class HabitIndexViewTests(TestCase):
         habit2 = create_habit(user=user, name='habit2', completed=True)
         habit3 = create_habit(user=user, name='habit3')
 
-        response = self.client.get(reverse('Habits'))
+        response = self.client.get(reverse('index'))
         self.assertEqual(response.status_code, 200)
 
         completed = response.context['complete_habit']
@@ -192,7 +192,7 @@ class HabitIndexViewTests(TestCase):
         self.assertQuerysetEqual(completed, ['<Habit: habit1>', '<Habit: habit2>'])
         self.assertQuerysetEqual(incompleted, ['<Habit: habit3>'])
 
-        response = self.client.post(reverse('Habits'), {'complete': habit3.id})
+        response = self.client.post(reverse('index'), {'complete': habit3.id})
         self.assertEqual(response.status_code, 200)
         completed = response.context['complete_habit']
         incompleted = response.context['incomplete_habit']
@@ -205,12 +205,12 @@ class HabitIndexViewTests(TestCase):
         habit1 = create_habit(user=user, name='habit1', completed=True)
         habit2 = create_habit(user=user, name='habit2', completed=True)
         habit3 = create_habit(user=user, name='habit3')
-        response = self.client.get(reverse('Habits'))
+        response = self.client.get(reverse('index'))
         self.assertEqual(response.status_code, 200)
         completed = response.context['complete_habit']
         self.assertQuerysetEqual(completed, ['<Habit: habit1>', '<Habit: habit2>'])
 
-        response = self.client.post(reverse('Habits'), {'delete': habit1.id})
+        response = self.client.post(reverse('index'), {'delete': habit1.id})
         self.assertEqual(response.status_code, 200)
         completed = response.context['complete_habit']
         self.assertQuerysetEqual(completed, ['<Habit: habit2>'])
@@ -226,7 +226,7 @@ class HabitIndexViewTests(TestCase):
         habit3c = create_habit(user=user, name='habit3c', priority = Habit.HIGH, completed=True)
 
 
-        response = self.client.get(reverse('Habits'))
+        response = self.client.get(reverse('index'))
         self.assertEqual(response.status_code, 200)
         completed = response.context['complete_habit']
         incompleted = response.context['incomplete_habit']

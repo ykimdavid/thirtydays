@@ -21,7 +21,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 #SECRET_KEY = os.environ['SECRET_KEY']
 
 # SECURITY WARNING: don't run with debug turned on in production!
-development = False
+development = True
 
 if not development:
     SECRET_KEY = os.environ['SECRET_KEY']
@@ -131,4 +131,5 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 MEDIA_URL = '/media/'
 
-LOGIN_REDIRECT_URL = 'Habits'
+LOGIN_URL = '/login/'
+LOGIN_REDIRECT_URL = '/'
