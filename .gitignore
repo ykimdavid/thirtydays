@@ -9,4 +9,4 @@ db.sqlite3
 /static
 /media
 .DS_Store
-settings.py
+thirtydays/settings.py
