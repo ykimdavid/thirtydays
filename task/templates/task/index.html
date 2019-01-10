@@ -21,7 +21,7 @@
         <div class="right valign-wrapper">
           <form method = "post">
             {% csrf_token %}
-            <button class="btn-floating" type="submit" name="delete" value="{{habit.id}}">
+            <button onclick="return confirm('Are you sure?')" class="btn-floating" type="submit" name="delete" value="{{habit.id}}">
               <i class="material-icons">delete</i></button>
             <a href="/editform/{{habit.id}}/" class="btn-floating">
               <i class="material-icons">edit</i></a>
@@ -46,7 +46,7 @@
         <div class="right valign-wrapper">
           <form method = "post">
             {% csrf_token %}
-            <button class="btn-floating" type="submit" name="delete" value="{{habit.id}}">
+            <button onclick="return confirm('Are you sure?')" class="btn-floating" type="submit" name="delete" value="{{habit.id}}">
               <i class="material-icons">delete</i></button>
             <a href="/editform/{{habit.id}}/" class="btn-floating">
               <i class="material-icons">edit</i></a>

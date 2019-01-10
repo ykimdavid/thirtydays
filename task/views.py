@@ -59,9 +59,9 @@ def addHabit(request):
         form = AddForm(request.POST)
 
         if form.is_valid():
-            newHabit = form.save(commit=False)
-            newHabit.user = current_user
-            newHabit.initializeHabit()
+            habit = form.save(commit=False)
+            habit.user = current_user
+            habit.initializeHabit()
             messages.success(request, f'{habit.habit_name} was created successfully')
             return redirect('index')
 
