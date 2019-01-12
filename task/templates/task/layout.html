@@ -23,6 +23,11 @@
   	 padding-left: 300px;
      }
 
+     @media only screen and (max-width : 992px) {
+      header, main, footer {
+        padding-left: 0;
+      }
+    }
   </style>
 </head>
 <body>
@@ -46,17 +51,24 @@ a {
 </style>
 <script>
 $(document).ready(function(){
-
-// Initialize materialize data picker
-$('.datepicker').datepicker({'format': 'yyyy-mm-dd'});
-$('select').formSelect();
-
+  // Initialize materialize data picker
+  $('.datepicker').datepicker({'format': 'yyyy-mm-dd'});
+  $('select').formSelect();
+  $('.sidenav').sidenav();
 });
+$(".sidenav-trigger").sideNav();
+
+  $('.sidenav-trigger').sideNav({
+      menuWidth: 300, // Default is 300
+      edge: 'left', // Choose the horizontal origin
+      closeOnClick: true, // Closes side-nav on <a> clicks, useful for Angular/Meteor
+      draggable: true // Choose whether you can drag to open on touch screens
+    }
+  );
 
 </script>
 
 {% endblock javascript %}
-
   <ul id="slide-out" class="sidenav sidenav-fixed">
     <li><h3 class="center-align"><a href="{% url 'index' %}">thirtydays</a></h3></li>
     <li><a class="waves-effect" href="{% url 'add_habit' %}"><i class="material-icons">add</i>Add a Habit</a></li><br>
@@ -69,6 +81,7 @@ $('select').formSelect();
     <li><a class="waves-effect" href="/admin"><i class="material-icons">supervisor_account</i> Admin Login </a></li>
     {% endif %}
   </ul>
+  <a href="#" data-target="slide-out" class="sidenav-trigger show-on-large"><i class="material-icons">menu</i></a>
 
   <main>
 {% if messages %}
@@ -85,7 +98,6 @@ $('select').formSelect();
     <br>
 
   </main>
-
 </body>
 
 

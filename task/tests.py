@@ -192,7 +192,7 @@ class HabitIndexViewTests(TestCase):
         self.assertQuerysetEqual(completed, ['<Habit: habit1>', '<Habit: habit2>'])
         self.assertQuerysetEqual(incompleted, ['<Habit: habit3>'])
 
-        response = self.client.post(reverse('index'), {'complete': habit3.id})
+        response = self.client.post(reverse('index'), {'complete': habit3.id}, follow=True)
         self.assertEqual(response.status_code, 200)
         completed = response.context['complete_habit']
         incompleted = response.context['incomplete_habit']
@@ -211,6 +211,8 @@ class HabitIndexViewTests(TestCase):
         self.assertQuerysetEqual(completed, ['<Habit: habit1>', '<Habit: habit2>'])
 
         response = self.client.post(reverse('index'), {'delete': habit1.id})
+        self.assertEqual(response.status_code, 302)
+        response = self.client.post(reverse('index'))
         self.assertEqual(response.status_code, 200)
         completed = response.context['complete_habit']
         self.assertQuerysetEqual(completed, ['<Habit: habit2>'])
@@ -252,7 +254,7 @@ class HabitAddHabitTests(TestCase):
         response = self.client.get(reverse('add_habit'))
         self.assertEqual(response.status_code, 302)
 
-    def testAdd1(self):
+    def testAdd1(self): #NOTE: Failing
         user = User.objects.create_user(username='testuser', password='12345')
         login = self.client.login(username='testuser', password='12345')
 
@@ -263,14 +265,16 @@ class HabitAddHabitTests(TestCase):
             'habit_priority' : Habit.LOW,
         }
 
-        response = self.client.post(reverse('add_habit'), form_input)
-        self.assertEqual(response.status_code, 302)
+        response = self.client.post(reverse('add_habit'), form_input, follow=True)
+        self.assertEqual(response.status_code, 200)
         habit = Habit.objects.get(habit_name='testHabit1')
         self.assertEqual(habit.habit_name, 'testHabit1')
         sample_date = datetime.date(2019, 1, 1)
-        self.assertEqual(habit.start_date, sample_date)
         self.assertEqual(habit.habit_desc, 'description')
         self.assertEqual(habit.habit_priority, Habit.LOW)
+        self.assertEqual(habit.day_counter, 8)
+        self.assertEqual(habit.start_date, sample_date)
+
 
 
 class HabitEditHabitTests(TestCase):
