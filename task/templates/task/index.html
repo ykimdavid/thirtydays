@@ -11,7 +11,7 @@
   {% endif %}
   <div class="row">
   {% for habit in incomplete_habit %}
-    <div class="col s6">
+    <div class="col l6 m6 s12">
       <div class="card hoverable">
         <div class="card-content">
         <span class="card-title"><a href="/task/{{habit.id}}">{{habit.habit_name}}</a></span>
@@ -36,7 +36,7 @@
   {% endfor %}
 
   {% for habit in complete_habit %}
-    <div class="col s6">
+    <div class="col l6 m6 s12">
       <div class="card grey lighten-3 hoverable">
         <div class="card-content">
         <span class="card-title"><a href="/task/{{habit.id}}">{{habit.habit_name}}</a></span>
@@ -62,28 +62,3 @@
 
 </div>
 {% endblock %}
-
-
-<!--
-      <li class="collection-item">
-        <span class="title"><a href="/task/{{habit.id}}"><h6>{{habit.habit_name}}</h6></a></span>
-          <a class="secondary-content">
-            <form method = "post">
-              {% csrf_token %}
-              <button class="btn-floating" type="submit" name="delete" value="{{habit.id}}">
-                <i class="material-icons">delete</i></button>
-              <button class="btn-floating" type="submit" name="edit" value="{{habit.id}}">
-                <i class="material-icons">edit</i></button>
-              <button class="btn-floating" type="submit" name="complete" value="{{habit.id}}">
-                <i class="material-icons">check</i></button>
-            </form>
-          </a>
-
-          Days Completed: {{habit.day_counter }} <br>
-          <br>
-      </li>
-
-
-</ul>
-
--->
