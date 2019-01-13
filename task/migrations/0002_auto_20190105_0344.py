@@ -17,7 +17,7 @@ class Migration(migrations.Migration):
         ),
         migrations.AddField(
             model_name='habit',
-            name='day_counter',
+            name='current_streak',
             field=models.IntegerField(default=0, editable=False),
         ),
         migrations.AlterField(

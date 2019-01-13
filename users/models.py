@@ -1,11 +1,12 @@
 from django.db import models
 from django.contrib.auth.models import User
-from django.forms import EmailField, ModelForm
+from django.forms import EmailField, ModelForm, CharField
 from django.contrib.auth.forms import UserCreationForm
 from PIL import Image
 
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
+    name = models.CharField(max_length=100, null=True, blank=True)
     image = models.ImageField(default='default.jpg', upload_to='profile_pics')
 
     def __str__(self):
@@ -26,16 +27,26 @@ class Profile(models.Model):
 
 class RegistrationForm(UserCreationForm):
     email = EmailField(required=True)
-
+    name = CharField(max_length=100)
     class Meta:
         model = User
-        fields = ['username', 'email', 'password1', 'password2']
+        fields = ['name', 'username', 'email', 'password1', 'password2']
         help_texts = {
             'username': None,
             'email': None,
             'password1': None,
             'password2': None,
         }
+
+    def save(self, commit=True):
+        user = super(RegistrationForm, self).save(commit=False)
+        name = self.cleaned_data['name']
+
+        if commit:
+            user.save()
+            profile = Profile.objects.create(user = user, name = name)
+            profile.save()
+        return user
 
 class UserUpdateForm(ModelForm):
     email = EmailField(required=True)
@@ -50,5 +61,5 @@ class UserUpdateForm(ModelForm):
 class ProfileUpdateForm(ModelForm):
     class Meta:
         model = Profile
-        fields = ['image']
+        fields = ['name', 'image']
 # Create your models here.

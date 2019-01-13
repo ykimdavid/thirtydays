@@ -5,6 +5,8 @@ from .models import AddForm
 from django.template import RequestContext
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
+from calendar import HTMLCalendar
+import datetime
 
 @login_required
 def index(request):
@@ -43,7 +45,7 @@ def index(request):
     }
     return render(request, 'task/index.html', context)
 
-@login_required(login_url='/login/')
+@login_required
 def detail(request, id):
     for habit in Habit.objects.all():
         habit.update()
@@ -52,7 +54,7 @@ def detail(request, id):
     context = {'habit': habit}
     return render(request, 'task/detail.html', context)
 
-@login_required(login_url='/login/')
+@login_required
 def addHabit(request):
     current_user = request.user
     if request.method == 'POST':
@@ -70,7 +72,7 @@ def addHabit(request):
 
     return render(request, 'task/addHabit.html', {'form': form})
 
-@login_required(login_url='/login/')
+@login_required
 def editHabit(request, id):
     habit = get_object_or_404(Habit, pk = id)
     form = AddForm(request.POST or None, instance=habit)
@@ -85,3 +87,11 @@ def editHabit(request, id):
 @login_required(login_url='/login/')
 def user_settings(request):
     return render(request, 'task/settings.html')
+
+@login_required
+def monthView(request):
+    d = datetime.date.today()
+    cal = HTMLCalendar()
+    html_calendar = cal.formatmonth(d.year, d.month, withyear=True)
+    html_calendar = html_calendar.replace('<td ', '<td width="150" height="100"')
+    return render(request, 'task/monthView.html', {'calendar': html_calendar})

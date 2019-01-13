@@ -18,7 +18,8 @@ class Habit(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     habit_name = models.CharField(max_length=200, unique=True)
     start_date = models.DateField(default=datetime.date.today)
-    day_counter = models.IntegerField(default = 0)
+    current_streak = models.IntegerField(default = 0)
+    longest_streak = models.IntegerField(default = 0)
     habit_desc = models.TextField(blank=True)
     habit_priority = models.IntegerField(choices=PRIORITY_CHOICES, default=NORMAL)
     completed = models.BooleanField(default = False)
@@ -35,7 +36,7 @@ class Habit(models.Model):
                 if self.completed:
                     self.completed = False
                 else:
-                    self.day_counter = 0
+                    self.current_streak = 0
                     self.start_date = today
         else:
             if self.start_date <= today:
@@ -47,7 +48,11 @@ class Habit(models.Model):
     def complete(self):
         if not self.completed:
             self.completed = True
-            self.day_counter += 1
+            self.current_streak += 1
+
+            if (self.current_streak > self.longest_streak):
+                self.longest_streak = self.current_streak
+
             self.save()
 
     def initializeHabit(self):
@@ -57,7 +62,8 @@ class Habit(models.Model):
 
         if self.start_date < today:
             elapsed = today - self.start_date
-            self.day_counter = elapsed.days
+            self.current_streak = elapsed.days
+            self.longest_streak = elapsed.days
 
         self.last_update = today
         self.save()
@@ -67,7 +73,7 @@ class Habit(models.Model):
 class AddForm(ModelForm):
     class Meta:
         model = Habit
-        exclude = ('day_counter', 'completed', 'active', 'user', 'last_update')
+        exclude = ('current_streak', 'completed', 'active', 'user', 'last_update')
         widgets = {
             'start_date': SelectDateWidget(years=range(datetime.date.today().year - 10, datetime.date.today().year + 10))
         }

@@ -35,7 +35,7 @@ class TestUtil(TestCase):
         self.assertEqual(datetime.datetime.now(), datetime.datetime(2012, 1, 14, 12, 0, 1))
         freezer.stop()
 
-class HabitTests(TestCase):
+class HabitTests(TestCase): #TODO: test longest_streak
     def testDayCounter(self):
         """ Tests efficacy of initializeHabit method"""
         user = User.objects.create_user(username='testuser', password='12345')
@@ -43,8 +43,8 @@ class HabitTests(TestCase):
         today = datetime.datetime.now().date()
         habit = create_habit(user=user, days = -10)
 
-        self.assertIs(habit.day_counter, 10)
-        current_date = habit.start_date + datetime.timedelta(days = habit.day_counter)
+        self.assertIs(habit.current_streak, 10)
+        current_date = habit.start_date + datetime.timedelta(days = habit.current_streak)
         self.assertEqual(current_date, today)
 
 
@@ -56,13 +56,13 @@ class HabitTests(TestCase):
         today = datetime.datetime.now().date()
         habit.complete()
         self.assertEqual(habit.start_date, today)
-        self.assertIs(habit.day_counter, 1)
+        self.assertIs(habit.current_streak, 1)
         self.assertTrue(habit.completed)
 
         tomorrow = today + datetime.timedelta(days = 1)
         with freeze_time(tomorrow):
             habit.update()
-            self.assertIs(habit.day_counter, 1)
+            self.assertIs(habit.current_streak, 1)
             self.assertFalse(habit.completed)
 
 
@@ -73,12 +73,12 @@ class HabitTests(TestCase):
         habit = create_habit(user=user, days = -10)
         today = datetime.datetime.now().date()
 
-        self.assertIs(habit.day_counter, 10)
+        self.assertIs(habit.current_streak, 10)
 
         tomorrow = today + datetime.timedelta(days = 1)
         with freeze_time(tomorrow):
             habit.update()
-            self.assertIs(habit.day_counter, 0)
+            self.assertIs(habit.current_streak, 0)
             self.assertEqual(habit.start_date, tomorrow)
 
 
@@ -89,7 +89,7 @@ class HabitTests(TestCase):
         habit = create_habit(user=user)
         habit.update()
         today = datetime.datetime.now().date()
-        self.assertIs(habit.day_counter, 0)
+        self.assertIs(habit.current_streak, 0)
         self.assertEqual(habit.start_date, today)
         self.assertIs(habit.completed, False)
 
@@ -101,14 +101,14 @@ class HabitTests(TestCase):
         today = datetime.datetime.now().date()
         futuredate = datetime.datetime.now().date() + datetime.timedelta(days = 10)
 
-        self.assertIs(habit.day_counter, 0)
+        self.assertIs(habit.current_streak, 0)
         self.assertEqual(habit.start_date, futuredate)
         self.assertIs(habit.active, False)
 
         not_quite_futuredate = today + datetime.timedelta(days = 5)
         with freeze_time(not_quite_futuredate):
             habit.update()
-            self.assertIs(habit.day_counter, 0)
+            self.assertIs(habit.current_streak, 0)
             self.assertEqual(habit.start_date, futuredate)
             self.assertIs(habit.active, False)
 
@@ -272,7 +272,7 @@ class HabitAddHabitTests(TestCase):
         sample_date = datetime.date(2019, 1, 1)
         self.assertEqual(habit.habit_desc, 'description')
         self.assertEqual(habit.habit_priority, Habit.LOW)
-        self.assertEqual(habit.day_counter, 8)
+        self.assertEqual(habit.current_streak, 8)
         self.assertEqual(habit.start_date, sample_date)
 
 
