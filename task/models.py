@@ -64,7 +64,7 @@ class Habit(models.Model):
 
     def updateEvent(self): # creates event for day if doesn't exist, updates ow.
         today = datetime.date.today()
-        event = Event.objects.filter(date=today).first()
+        event = Event.objects.filter(user=self.user, date=today).first()
 
         if not event:
             event = Event.objects.create(
