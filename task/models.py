@@ -118,7 +118,7 @@ class Event(models.Model):
 
     def initializeEvent(self): # updates event habits for day
         today = datetime.date.today()
-        active_habits = Habit.objects.filter(user=user, active=True)
+        active_habits = Habit.objects.filter(user=self.user, active=True)
         for habit in active_habits:
             self.habits.add(habit)
         self.save()
