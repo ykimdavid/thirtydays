@@ -38,6 +38,7 @@ if development:
 INSTALLED_APPS = [
     'task.apps.TaskConfig',
     'users.apps.UsersConfig',
+    'cal.apps.CalConfig',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -45,6 +46,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'materializecssform',
+    'multiselectfield',
 ]
 
 MIDDLEWARE = [

@@ -1,5 +1,5 @@
 from django.test import TestCase
-from task.models import Habit
+from task.models import Habit, Event
 from django.urls import reverse
 from django.contrib.auth.models import User
 from freezegun import freeze_time
@@ -8,7 +8,7 @@ from django.db import transaction, IntegrityError
 import datetime
 
 
-def create_habit(user, name="testHabit", days=0, desc="description", priority=1, completed=False):
+def create_habit(user, name="testHabit", days=0, desc="description", priority=1, completed=False, tracked_days=['0', '1', '2', '3', '4', '5', '6'], longest_streak=0, current_streak=0):
     """ Create a habit with 'days' number of days offset from now. Set days as
     a negative integer for habits created in the past, positive for future """
     date = datetime.datetime.now().date() + datetime.timedelta(days = days)
@@ -19,7 +19,10 @@ def create_habit(user, name="testHabit", days=0, desc="description", priority=1,
         start_date = date,
         habit_desc = desc,
         habit_priority = priority,
-        completed = False,
+        completed = completed,
+        tracked_days=tracked_days,
+        longest_streak=longest_streak,
+        current_streak=current_streak,
     )
 
     habit.initializeHabit()
@@ -36,16 +39,17 @@ class TestUtil(TestCase):
         freezer.stop()
 
 class HabitTests(TestCase): #TODO: test longest_streak
-    def testDayCounter(self):
-        """ Tests efficacy of initializeHabit method"""
-        user = User.objects.create_user(username='testuser', password='12345')
-        login = self.client.login(username='testuser', password='12345')
-        today = datetime.datetime.now().date()
-        habit = create_habit(user=user, days = -10)
-
-        self.assertIs(habit.current_streak, 10)
-        current_date = habit.start_date + datetime.timedelta(days = habit.current_streak)
-        self.assertEqual(current_date, today)
+    #NOTE: OUTDATED
+    # def testDayCounter(self):
+    #     """ Tests efficacy of initializeHabit method of previous habit"""
+    #     user = User.objects.create_user(username='testuser', password='12345')
+    #     login = self.client.login(username='testuser', password='12345')
+    #     today = datetime.datetime.now().date()
+    #     habit = create_habit(user=user, days = -10)
+    #
+    #     self.assertIs(habit.current_streak, 10)
+    #     current_date = habit.start_date + datetime.timedelta(days = habit.current_streak)
+    #     self.assertEqual(current_date, today)
 
 
     def testUpdate_update_completed(self):
@@ -70,10 +74,9 @@ class HabitTests(TestCase): #TODO: test longest_streak
         """ Tests non-completed case of update method """
         user = User.objects.create_user(username='testuser', password='12345')
         login = self.client.login(username='testuser', password='12345')
-        habit = create_habit(user=user, days = -10)
+        habit = create_habit(user=user)
         today = datetime.datetime.now().date()
-
-        self.assertIs(habit.current_streak, 10)
+        self.assertIs(habit.current_streak, 0)
 
         tomorrow = today + datetime.timedelta(days = 1)
         with freeze_time(tomorrow):
@@ -93,36 +96,38 @@ class HabitTests(TestCase): #TODO: test longest_streak
         self.assertEqual(habit.start_date, today)
         self.assertIs(habit.completed, False)
 
-    def testFutureHabit(self):
-        """ Tests efficacy of future habits and active tag. """
-        user = User.objects.create_user(username='testuser', password='12345')
-        login = self.client.login(username='testuser', password='12345')
-        habit = create_habit(user=user, days = 10)
-        today = datetime.datetime.now().date()
-        futuredate = datetime.datetime.now().date() + datetime.timedelta(days = 10)
+#NOTE: OUTDATED
+    # def testFutureHabit(self):
+    #     """ Tests efficacy of future habits and active tag. """
+    #     user = User.objects.create_user(username='testuser', password='12345')
+    #     login = self.client.login(username='testuser', password='12345')
+    #     habit = create_habit(user=user, days = 10)
+    #     today = datetime.datetime.now().date()
+    #     futuredate = datetime.datetime.now().date() + datetime.timedelta(days = 10)
+    #
+    #     self.assertIs(habit.current_streak, 0)
+    #     self.assertEqual(habit.start_date, futuredate)
+    #     self.assertIs(habit.active, False)
+    #
+    #     not_quite_futuredate = today + datetime.timedelta(days = 5)
+    #     with freeze_time(not_quite_futuredate):
+    #         habit.update()
+    #         self.assertIs(habit.current_streak, 0)
+    #         self.assertEqual(habit.start_date, futuredate)
+    #         self.assertIs(habit.active, False)
 
-        self.assertIs(habit.current_streak, 0)
-        self.assertEqual(habit.start_date, futuredate)
-        self.assertIs(habit.active, False)
-
-        not_quite_futuredate = today + datetime.timedelta(days = 5)
-        with freeze_time(not_quite_futuredate):
-            habit.update()
-            self.assertIs(habit.current_streak, 0)
-            self.assertEqual(habit.start_date, futuredate)
-            self.assertIs(habit.active, False)
-
-    def testUpdate_futureHabit(self):
-        """ Tests if active tag is updated when a future habit reaches start day. """
-        user = User.objects.create_user(username='testuser', password='12345')
-        login = self.client.login(username='testuser', password='12345')
-        habit = create_habit(user=user, days = 10)
-        self.assertIs(habit.active, False)
-
-        futuredate = habit.start_date + datetime.timedelta(days = 10)
-        with freeze_time(futuredate):
-            habit.update()
-            self.assertTrue(habit.active)
+#NOTE: OUTDATED
+    # def testUpdate_futureHabit(self):
+    #     """ Tests if active tag is updated when a future habit reaches start day. """
+    #     user = User.objects.create_user(username='testuser', password='12345')
+    #     login = self.client.login(username='testuser', password='12345')
+    #     habit = create_habit(user=user, days = 10)
+    #     self.assertIs(habit.active, False)
+    #
+    #     futuredate = habit.start_date + datetime.timedelta(days = 10)
+    #     with freeze_time(futuredate):
+    #         habit.update()
+    #         self.assertTrue(habit.active)
 
     def testDuplicateHabit(self):
         user = User.objects.create_user(username='testuser', password='12345')
@@ -130,6 +135,114 @@ class HabitTests(TestCase): #TODO: test longest_streak
         habit = create_habit(user=user)
         with transaction.atomic():
             self.assertRaises(IntegrityError, lambda: create_habit(user=user))
+
+    def testLongestStreak(self):
+        user = User.objects.create_user(username='testuser', password='12345')
+        login = self.client.login(username='testuser', password='12345')
+        habit = create_habit(user=user, current_streak=5, longest_streak=7)
+        today = datetime.date.today()
+        tomorrow = today + datetime.timedelta(days=1)
+        tomorrowmorrow = today + datetime.timedelta(days=2)
+        tomorrowmorrowmorrow = today + datetime.timedelta(days=3)
+        self.assertFalse(habit.completed)
+        habit.complete()
+        habit.update()
+        self.assertTrue(habit.completed)
+        self.assertIs(habit.current_streak, 6)
+        self.assertIs(habit.longest_streak, 7)
+
+        with freeze_time(tomorrow):
+            habit.update()
+            habit.complete()
+            habit.update()
+            self.assertTrue(habit.completed)
+            self.assertIs(habit.current_streak, 7)
+            self.assertIs(habit.longest_streak, 7)
+
+        with freeze_time(tomorrowmorrow): #increment longest streak
+            habit.update()
+            habit.complete()
+            habit.update()
+            self.assertTrue(habit.completed)
+            self.assertIs(habit.current_streak, 8)
+            self.assertIs(habit.longest_streak, 8)
+
+        with freeze_time(tomorrowmorrowmorrow):
+            habit.update()
+            self.assertFalse(habit.completed)
+            self.assertIs(habit.current_streak, 8)
+            self.assertIs(habit.longest_streak, 8)
+
+        with freeze_time(tomorrowmorrowmorrow + datetime.timedelta(days=1)): #current streak resets
+            habit.update()
+            self.assertFalse(habit.completed)
+            self.assertIs(habit.current_streak, 0)
+            self.assertIs(habit.longest_streak, 8)
+
+    def trackedDays1(self):
+        user = User.objects.create_user(username='testuser', password='12345')
+        login = self.client.login(username='testuser', password='12345')
+        habit = create_habit(user=user, tracked_days=['0', '1']) #monday and tuesday
+        start = datetime.date(2019, 1, 14) #Monday
+        with freeze_time(start): #Monday
+            habit.update()
+            self.assertTrue(habit.active)
+            habit.complete()
+
+        with freeze_time(start + datetime.timedelta(days=1)): #Tuesday
+            habit.update()
+            self.assertTrue(habit.active)
+            self.assertIs(habit.current_streak, 1)
+            habit.complete()
+            self.assertIs(habit.current_streak, 2)
+
+        with freeze_time(start + datetime.timedelta(days=2)): #Wednesday
+            habit.update()
+            self.assertFalse(habit.active)
+            self.assertIs(habit.current_streak, 2)
+            habit.complete()
+            self.assertIs(habit.current_streak, 2)
+
+        with freeze_time(start + datetime.timedelta(days=3)): #Thursday
+            habit.update()
+            self.assertFalse(habit.active)
+
+        with freeze_time(start + datetime.timedelta(days=7)): #Monday
+            habit.update()
+            self.assertTrue(habit.active)
+            self.assertIs(habit.current_streak, 2)
+            habit.complete()
+            self.assertIs(habit.current_streak, 3)
+
+
+class EventTests(TestCase):
+    def eventCreation(self):
+        user = User.objects.create_user(username='testuser', password='12345')
+        login = self.client.login(username='testuser', password='12345')
+        habit1 = create_habit(user=user, name='habit1')
+        habit2 = create_habit(user=user, name='habit2')
+        habit3 = create_habit(user=user, name='habit3')
+        habits = [habit2, habit3]
+        habit1.update()
+        event = Event.objects.get(date=datetime.date.today())
+        self.assertIs(Event.objects.all().count(), 1)
+        self.assertIs(event.habits.all().count(), 3)
+        self.assertEqual(event.status, 'None')
+
+        habit1.complete()
+        habit1.update()
+        event = Event.objects.get(date=datetime.date.today())
+
+        self.assertEqual(event.status, 'Partial')
+        for habit in habits:
+            habit.complete()
+            habit.update()
+            self.assertTrue(habit.completed)
+
+        event = Event.objects.get(date=datetime.date.today())
+
+        self.assertEqual(event.status, 'Perfect')
+
 
 
 class HabitIndexViewTests(TestCase):

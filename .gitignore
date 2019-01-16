@@ -10,3 +10,5 @@ db.sqlite3
 /media
 .DS_Store
 thirtydays/settings.py
+htmlcalcode.html
+thirtydays/thirtydays/secret_settings.py
