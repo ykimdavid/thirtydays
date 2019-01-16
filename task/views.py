@@ -16,16 +16,16 @@ def index(request):
         if complete:
             habit = get_object_or_404(Habit, pk = complete)
             habit.complete()
-            messages.success(request, f'{habit.habit_name} was completed successfully')
+            messages.success(request, f'{habit.name} was completed successfully')
             return redirect('index')
 
         if delete:
             habit = get_object_or_404(Habit, pk = delete)
             habit.delete()
-            messages.success(request, f'{habit.habit_name} was deleted successfully')
+            messages.success(request, f'{habit.name} was deleted successfully')
             return redirect('index')
 
-    habit_list = Habit.objects.filter(user=current_user).order_by('-habit_priority')
+    habit_list = Habit.objects.filter(user=current_user).order_by('-priority')
 
     for habit in habit_list:
         habit.update()
@@ -63,7 +63,7 @@ def addHabit(request):
             habit = form.save(commit=False)
             habit.user = current_user
             habit.initializeHabit()
-            messages.success(request, f'{habit.habit_name} was created successfully')
+            messages.success(request, f'{habit.name} was created successfully')
             return redirect('index')
 
     else:
@@ -78,7 +78,7 @@ def editHabit(request, id):
     if form.is_valid():
         form.save()
         habit.initializeHabit()
-        messages.success(request, f'{habit.habit_name} was edited successfully')
+        messages.success(request, f'{habit.name} was edited successfully')
         return redirect('index')
 
     return render(request, 'task/editHabit.html', {'form': form, 'id':habit.id})

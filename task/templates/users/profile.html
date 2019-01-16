@@ -1,18 +1,17 @@
 {% extends 'task/layout.html' %}
 
 {% block content %}
-<h4 class="center-align"> {{ user }}'s Profile </h4>
+<h4 class="center-align"> {{ user.profile.name }}'s Profile </h4>
 
-<div class="container">
-  <div class="col">
-    <img class="row s2 circle" width="200" height="200" src="{{ user.profile.image.url }}">
-      <div class="row s4">
+<div class="block">
+    <div class="row">
+      <img class="col" width="200" height="200" src="{{ user.profile.image.url }}">
+      <div class="col l8 offset-l1 offset-s0 offset-m0" >
         <h5> Profile Info </h5>
         <form method="POST" enctype="multipart/form-data">
           {% csrf_token %}
-            {{ u_form.as_p }}
-            <br>
             {{ p_form.as_p }}
+            {{ u_form.as_p }}
             <a href="\task"><input class = "btn" type="submit" value="Update"></a>
             <a href="\task" class="btn">Go Back</a>
         </form>

@@ -1,4 +1,9 @@
 {% extends 'task/layout.html' %}
+
 {% block content %}
-  {{calendar| safe}}
+<h4 class="center"> Calendar </h4>
+<div class="center-align grey-text text-darken-1">As you continue using thirtydays, the calendar will keep track of your daily progress.</div>
+<div class="block">
+  {{calendar|safe}}
+</div>
 {% endblock %}

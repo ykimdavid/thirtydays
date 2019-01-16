@@ -13,7 +13,7 @@ def monthView(request):
     user = request.user
     cal = Calendar(d.year, d.month)
     html_cal = cal.formatmonth(user=user, withyear=True)
-    html_cal = html_cal.replace('<td ', '<td width="150" height="100"')
+    html_cal = html_cal.replace('<td ', '<td width="150" height="100" ')
 
     context = {
         'calendar': html_cal,

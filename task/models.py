@@ -28,12 +28,12 @@ class Habit(models.Model):
     ]
 
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    habit_name = models.CharField(max_length=200, unique=True)
+    name = models.CharField(max_length=200, unique=True)
     start_date = models.DateField(default=datetime.date.today) #TODO: add validation against future dates
     current_streak = models.IntegerField(default = 0)
     longest_streak = models.IntegerField(default = 0)
-    habit_desc = models.TextField(blank=True)
-    habit_priority = models.IntegerField(choices=PRIORITY_CHOICES, default=NORMAL)
+    description = models.TextField(blank=True)
+    priority = models.IntegerField(choices=PRIORITY_CHOICES, default=NORMAL)
     completed = models.BooleanField(default = False)
     active = models.BooleanField(default = True)
     last_update = models.DateField(null=True)
@@ -41,7 +41,7 @@ class Habit(models.Model):
     #quit
 
     def __str__(self):
-        return self.habit_name
+        return self.name
 
     # assume ran once a day w celery
     def update(self):

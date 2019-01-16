@@ -15,10 +15,10 @@ def create_habit(user, name="testHabit", days=0, desc="description", priority=1,
 
     habit = Habit.objects.create(
         user = user,
-        habit_name = name,
+        name = name,
         start_date = date,
-        habit_desc = desc,
-        habit_priority = priority,
+        description = desc,
+        priority = priority,
         completed = completed,
         tracked_days=tracked_days,
         longest_streak=longest_streak,
@@ -372,19 +372,19 @@ class HabitAddHabitTests(TestCase):
         login = self.client.login(username='testuser', password='12345')
 
         form_input = {
-            'habit_name' : 'testHabit1',
+            'name' : 'testHabit1',
             'start_date' : '2019-01-01',
-            'habit_desc' : 'description',
-            'habit_priority' : Habit.LOW,
+            'description' : 'description',
+            'priority' : Habit.LOW,
         }
 
         response = self.client.post(reverse('add_habit'), form_input, follow=True)
         self.assertEqual(response.status_code, 200)
-        habit = Habit.objects.get(habit_name='testHabit1')
-        self.assertEqual(habit.habit_name, 'testHabit1')
+        habit = Habit.objects.get(name='testHabit1')
+        self.assertEqual(habit.name, 'testHabit1')
         sample_date = datetime.date(2019, 1, 1)
-        self.assertEqual(habit.habit_desc, 'description')
-        self.assertEqual(habit.habit_priority, Habit.LOW)
+        self.assertEqual(habit.description, 'description')
+        self.assertEqual(habit.priority, Habit.LOW)
         self.assertEqual(habit.current_streak, 8)
         self.assertEqual(habit.start_date, sample_date)
 
