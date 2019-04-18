@@ -1,7 +1,16 @@
+amqp==2.4.0
+anyjson==0.3.3
+billiard==3.5.0.5
 Django==2.1.5
 django-materializecss-form==1.1.11
+django-multiselectfield==0.1.8
+django-timezone-field==3.0
 freezegun==0.3.11
+kombu==4.2.2.post1
 Pillow==5.4.1
+python-crontab==2.3.6
 python-dateutil==2.7.5
 pytz==2018.9
+redis==3.0.1
 six==1.12.0
+vine==1.2.0

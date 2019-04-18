@@ -1,5 +1,6 @@
 from django.test import TestCase
 from task.models import Habit, Event
+from task.management.commands.update import Command
 from django.urls import reverse
 from django.contrib.auth.models import User
 from freezegun import freeze_time
@@ -56,6 +57,7 @@ class HabitTests(TestCase): #TODO: test longest_streak
         """ Tests else case of update method """
         user = User.objects.create_user(username='testuser', password='12345')
         login = self.client.login(username='testuser', password='12345')
+        Command.update()
         habit = create_habit(user=user)
         today = datetime.datetime.now().date()
         habit.complete()
@@ -65,6 +67,7 @@ class HabitTests(TestCase): #TODO: test longest_streak
 
         tomorrow = today + datetime.timedelta(days = 1)
         with freeze_time(tomorrow):
+            Command.update()
             habit.update()
             self.assertIs(habit.current_streak, 1)
             self.assertFalse(habit.completed)
@@ -74,12 +77,14 @@ class HabitTests(TestCase): #TODO: test longest_streak
         """ Tests non-completed case of update method """
         user = User.objects.create_user(username='testuser', password='12345')
         login = self.client.login(username='testuser', password='12345')
+        Command.update()
         habit = create_habit(user=user)
         today = datetime.datetime.now().date()
         self.assertIs(habit.current_streak, 0)
 
         tomorrow = today + datetime.timedelta(days = 1)
         with freeze_time(tomorrow):
+            Command.update()
             habit.update()
             self.assertIs(habit.current_streak, 0)
             self.assertEqual(habit.start_date, tomorrow)
@@ -89,6 +94,7 @@ class HabitTests(TestCase): #TODO: test longest_streak
         """ Tests that habit attributes do not update during the same day. """
         user = User.objects.create_user(username='testuser', password='12345')
         login = self.client.login(username='testuser', password='12345')
+        Command.update()
         habit = create_habit(user=user)
         habit.update()
         today = datetime.datetime.now().date()
@@ -132,6 +138,7 @@ class HabitTests(TestCase): #TODO: test longest_streak
     def testDuplicateHabit(self):
         user = User.objects.create_user(username='testuser', password='12345')
         login = self.client.login(username='testuser', password='12345')
+        Command.update()
         habit = create_habit(user=user)
         with transaction.atomic():
             self.assertRaises(IntegrityError, lambda: create_habit(user=user))
@@ -139,6 +146,7 @@ class HabitTests(TestCase): #TODO: test longest_streak
     def testLongestStreak(self):
         user = User.objects.create_user(username='testuser', password='12345')
         login = self.client.login(username='testuser', password='12345')
+        Command.update()
         habit = create_habit(user=user, current_streak=5, longest_streak=7)
         today = datetime.date.today()
         tomorrow = today + datetime.timedelta(days=1)
@@ -152,6 +160,7 @@ class HabitTests(TestCase): #TODO: test longest_streak
         self.assertIs(habit.longest_streak, 7)
 
         with freeze_time(tomorrow):
+            Command.update()
             habit.update()
             habit.complete()
             habit.update()
@@ -160,6 +169,7 @@ class HabitTests(TestCase): #TODO: test longest_streak
             self.assertIs(habit.longest_streak, 7)
 
         with freeze_time(tomorrowmorrow): #increment longest streak
+            Command.update()
             habit.update()
             habit.complete()
             habit.update()
@@ -168,12 +178,14 @@ class HabitTests(TestCase): #TODO: test longest_streak
             self.assertIs(habit.longest_streak, 8)
 
         with freeze_time(tomorrowmorrowmorrow):
+            Command.update()
             habit.update()
             self.assertFalse(habit.completed)
             self.assertIs(habit.current_streak, 8)
             self.assertIs(habit.longest_streak, 8)
 
         with freeze_time(tomorrowmorrowmorrow + datetime.timedelta(days=1)): #current streak resets
+            Command.update()
             habit.update()
             self.assertFalse(habit.completed)
             self.assertIs(habit.current_streak, 0)
@@ -182,14 +194,17 @@ class HabitTests(TestCase): #TODO: test longest_streak
     def trackedDays1(self):
         user = User.objects.create_user(username='testuser', password='12345')
         login = self.client.login(username='testuser', password='12345')
+        Command.update()
         habit = create_habit(user=user, tracked_days=['0', '1']) #monday and tuesday
         start = datetime.date(2019, 1, 14) #Monday
         with freeze_time(start): #Monday
+            Command.update()
             habit.update()
             self.assertTrue(habit.active)
             habit.complete()
 
         with freeze_time(start + datetime.timedelta(days=1)): #Tuesday
+            Command.update()
             habit.update()
             self.assertTrue(habit.active)
             self.assertIs(habit.current_streak, 1)
@@ -197,6 +212,7 @@ class HabitTests(TestCase): #TODO: test longest_streak
             self.assertIs(habit.current_streak, 2)
 
         with freeze_time(start + datetime.timedelta(days=2)): #Wednesday
+            Command.update()
             habit.update()
             self.assertFalse(habit.active)
             self.assertIs(habit.current_streak, 2)
@@ -204,10 +220,12 @@ class HabitTests(TestCase): #TODO: test longest_streak
             self.assertIs(habit.current_streak, 2)
 
         with freeze_time(start + datetime.timedelta(days=3)): #Thursday
+            Command.update()
             habit.update()
             self.assertFalse(habit.active)
 
         with freeze_time(start + datetime.timedelta(days=7)): #Monday
+            Command.update()
             habit.update()
             self.assertTrue(habit.active)
             self.assertIs(habit.current_streak, 2)
@@ -219,6 +237,7 @@ class EventTests(TestCase):
     def eventCreation(self):
         user = User.objects.create_user(username='testuser', password='12345')
         login = self.client.login(username='testuser', password='12345')
+        Command.update()
         habit1 = create_habit(user=user, name='habit1')
         habit2 = create_habit(user=user, name='habit2')
         habit3 = create_habit(user=user, name='habit3')
@@ -249,6 +268,7 @@ class HabitIndexViewTests(TestCase):
     def test_no_habits(self):
         user = User.objects.create_user(username='testuser', password='12345')
         login = self.client.login(username='testuser', password='12345')
+        Command.update()
         response = self.client.get(reverse('index'))
         self.assertEqual(response.status_code, 200)
         completed = response.context['complete_habit']
@@ -260,6 +280,7 @@ class HabitIndexViewTests(TestCase):
     def test_incomplete_habits(self):
         user = User.objects.create_user(username='testuser', password='12345')
         login = self.client.login(username='testuser', password='12345')
+        Command.update()
         habit1 = create_habit(user=user, name='habit1')
         habit2 = create_habit(user=user, name='habit2')
         habit3 = create_habit(user=user, name='habit3')
@@ -276,6 +297,7 @@ class HabitIndexViewTests(TestCase):
     def test_complete_habits(self):
         user = User.objects.create_user(username='testuser', password='12345')
         login = self.client.login(username='testuser', password='12345')
+        Command.update()
         habit1 = create_habit(user=user, name='habit1', completed=True)
         habit2 = create_habit(user=user, name='habit2', completed=True)
         habit3 = create_habit(user=user, name='habit3')
@@ -292,6 +314,7 @@ class HabitIndexViewTests(TestCase):
     def test_completion(self):
         user = User.objects.create_user(username='testuser', password='12345')
         login = self.client.login(username='testuser', password='12345')
+        Command.update()
         habit1 = create_habit(user=user, name='habit1', completed=True)
         habit2 = create_habit(user=user, name='habit2', completed=True)
         habit3 = create_habit(user=user, name='habit3')
@@ -315,6 +338,7 @@ class HabitIndexViewTests(TestCase):
     def test_deletion(self):
         user = User.objects.create_user(username='testuser', password='12345')
         login = self.client.login(username='testuser', password='12345')
+        Command.update()
         habit1 = create_habit(user=user, name='habit1', completed=True)
         habit2 = create_habit(user=user, name='habit2', completed=True)
         habit3 = create_habit(user=user, name='habit3')
@@ -333,6 +357,7 @@ class HabitIndexViewTests(TestCase):
     def test_priority_order(self):
         user = User.objects.create_user(username='testuser', password='12345')
         login = self.client.login(username='testuser', password='12345')
+        Command.update()
         habit1 = create_habit(user=user, name='habit1', priority = Habit.LOW)
         habit2 = create_habit(user=user, name='habit2', priority = Habit.NORMAL)
         habit3 = create_habit(user=user, name='habit3', priority = Habit.HIGH)

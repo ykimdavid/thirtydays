@@ -1,0 +1,121 @@
+
+running
+running
+running
+running
+running
+running
+running
+running
+running
+running
+running
+running
+running
+running
+running
+Traceback (most recent call last):
+  File "manage.py", line 15, in <module>
+    execute_from_command_line(sys.argv)
+  File "/Users/ykimdavid/thirtydays/myvenv/lib/python3.6/site-packages/django/core/management/__init__.py", line 381, in execute_from_command_line
+    utility.execute()
+  File "/Users/ykimdavid/thirtydays/myvenv/lib/python3.6/site-packages/django/core/management/__init__.py", line 375, in execute
+    self.fetch_command(subcommand).run_from_argv(self.argv)
+  File "/Users/ykimdavid/thirtydays/myvenv/lib/python3.6/site-packages/django/core/management/base.py", line 316, in run_from_argv
+    self.execute(*args, **cmd_options)
+  File "/Users/ykimdavid/thirtydays/myvenv/lib/python3.6/site-packages/django/core/management/base.py", line 353, in execute
+    output = self.handle(*args, **options)
+  File "/Users/ykimdavid/thirtydays/task/management/commands/update.py", line 21, in handle
+    time.sleep(60)
+KeyboardInterrupt
+running
+running
+running
+running
+running
+running
+running
+Traceback (most recent call last):
+  File "manage.py", line 15, in <module>
+    execute_from_command_line(sys.argv)
+  File "/Users/ykimdavid/thirtydays/myvenv/lib/python3.6/site-packages/django/core/management/__init__.py", line 381, in execute_from_command_line
+    utility.execute()
+  File "/Users/ykimdavid/thirtydays/myvenv/lib/python3.6/site-packages/django/core/management/__init__.py", line 375, in execute
+    self.fetch_command(subcommand).run_from_argv(self.argv)
+  File "/Users/ykimdavid/thirtydays/myvenv/lib/python3.6/site-packages/django/core/management/base.py", line 316, in run_from_argv
+    self.execute(*args, **cmd_options)
+  File "/Users/ykimdavid/thirtydays/myvenv/lib/python3.6/site-packages/django/core/management/base.py", line 353, in execute
+    output = self.handle(*args, **options)
+  File "/Users/ykimdavid/thirtydays/task/management/commands/update.py", line 21, in handle
+    time.sleep(60)
+KeyboardInterrupt
+running
+running
+running
+updated
+running
+running
+running
+running
+running
+running
+running
+running
+running
+running
+running
+running
+running
+running
+running
+running
+running
+running
+running
+running
+running
+running
+running
+running
+running
+running
+running
+running
+running
+running
+running
+running
+running
+running
+running
+running
+running
+running
+running
+running
+running
+running
+running
+running
+running
+running
+running
+running
+running
+running
+running
+running
+Traceback (most recent call last):
+  File "manage.py", line 15, in <module>
+    execute_from_command_line(sys.argv)
+  File "/Users/ykimdavid/thirtydays/myvenv/lib/python3.6/site-packages/django/core/management/__init__.py", line 381, in execute_from_command_line
+    utility.execute()
+  File "/Users/ykimdavid/thirtydays/myvenv/lib/python3.6/site-packages/django/core/management/__init__.py", line 375, in execute
+    self.fetch_command(subcommand).run_from_argv(self.argv)
+  File "/Users/ykimdavid/thirtydays/myvenv/lib/python3.6/site-packages/django/core/management/base.py", line 316, in run_from_argv
+    self.execute(*args, **cmd_options)
+  File "/Users/ykimdavid/thirtydays/myvenv/lib/python3.6/site-packages/django/core/management/base.py", line 353, in execute
+    output = self.handle(*args, **options)
+  File "/Users/ykimdavid/thirtydays/task/management/commands/update.py", line 21, in handle
+    event.initializeEvent()
+KeyboardInterrupt

@@ -15,8 +15,7 @@
       <div class="card hoverable">
         <div class="card-content">
         <span class="card-title"><a href="/task/{{habit.id}}">{{habit.name}}</a></span>
-        Days Completed: {{ habit.current_streak }}
-
+        Current Streak: {{ habit.current_streak }}
 
         <div class="right valign-wrapper">
           <form method = "post">
@@ -40,7 +39,7 @@
       <div class="card grey lighten-3 hoverable">
         <div class="card-content">
         <span class="card-title"><a href="/task/{{habit.id}}">{{habit.name}}</a></span>
-        Days Completed: {{ habit.current_streak }}
+        Current Streak: {{ habit.current_streak }}
 
 
         <div class="right valign-wrapper">
@@ -64,9 +63,8 @@
     <div class="col l6 m6 s12">
       <div class="card hoverable">
         <div class="card-content">
-        <span class="card-title"><a href="/task/{{habit.id}}">{{habit.name}}</a></span>
-        Days Completed: {{ habit.current_streak }}
-        Currently Inactive.
+        <span class="card-title"><a href="/task/{{habit.id}}">{{habit.name}} [INACTIVE] </a></span>
+        Current Streak: {{ habit.current_streak }}
 
 
         <div class="right valign-wrapper">

@@ -26,9 +26,9 @@ def index(request):
             return redirect('index')
 
     habit_list = Habit.objects.filter(user=current_user).order_by('-priority')
-
-    for habit in habit_list:
-        habit.update()
+    #not needed with daily updates
+    #for habit in habit_list:
+    #    habit.update()
 
     is_empty = False
     if not habit_list:
@@ -46,8 +46,9 @@ def index(request):
 
 @login_required
 def detail(request, id):
-    for habit in Habit.objects.all():
-        habit.update()
+    #not needed with daily updates
+    #for habit in Habit.objects.all():
+    #    habit.update()
 
     habit = get_object_or_404(Habit, pk = id)
     context = {'habit': habit}

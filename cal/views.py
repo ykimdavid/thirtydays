@@ -11,6 +11,9 @@ from task.models import Event
 def monthView(request):
     d = datetime.date.today()
     user = request.user
+    e = Event.objects.get(date = d, user=user)
+    e.updateStatus()
+    e.save()
     cal = Calendar(d.year, d.month)
     html_cal = cal.formatmonth(user=user, withyear=True)
     html_cal = html_cal.replace('<td ', '<td width="150" height="100" ')

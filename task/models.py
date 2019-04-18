@@ -4,7 +4,7 @@ from django.utils import timezone
 from django.contrib.auth.models import User
 from multiselectfield import MultiSelectField
 import datetime
-
+import schedule
 
 class Habit(models.Model):
     LOW = 0
@@ -19,7 +19,7 @@ class Habit(models.Model):
 
     DAYSOFWEEK = [
         (0, 'Monday'),
-        (1, 'Tuesdsay'),
+        (1, 'Tuesday'),
         (2, 'Wednesday'),
         (3, 'Thursday'),
         (4, 'Friday'),
@@ -43,65 +43,38 @@ class Habit(models.Model):
     def __str__(self):
         return self.name
 
-    # assume ran once a day w celery
+    def priority_verbose(self):
+        return dict(Habit.PRIORITY_CHOICES)[self.priority]
+
+    # assume ran once a day w schedule
     def update(self):
         today = datetime.date.today()
         self.active = str(today.weekday()) in self.tracked_days
 
-        if self.active:
-            self.updateEvent()
-
-            if today > self.last_update: #next day resetting
-                if self.completed:
-                    self.completed = False
-                else:
-                    self.current_streak = 0
-                    self.start_date = today
-
+        if self.active and today > self.last_update:
+            if self.completed:
+                self.completed = False
+            else:
+                self.current_streak = 0
+                self.start_date = today
 
         self.last_update = today
         self.save()
 
-    def updateEvent(self): # creates event for day if doesn't exist, updates ow.
-        today = datetime.date.today()
-        event = Event.objects.filter(user=self.user, date=today).first()
-
-        if not event:
-            event = Event.objects.create(
-                user=self.user,
-                date=today,
-                status='None',
-            )
-            event.save()
-            event.initializeEvent()
-            event.update()
-        else:
-            event.update()
-            event.save()
-
     def complete(self):
-        if self.active:
-            if not self.completed:
-                self.completed = True
-                self.current_streak += 1
-
-                if (self.current_streak > self.longest_streak):
-                    self.longest_streak = self.current_streak
-
-                self.save()
+        if self.active and not self.completed:
+            self.completed = True
+            self.current_streak += 1
+            if (self.current_streak > self.longest_streak):
+                self.longest_streak = self.current_streak
+            self.save()
 
     def initializeHabit(self):
         today = datetime.datetime.now().date()
-        #if self.start_date > today:
-        #    self.active = False
-
-        #if self.start_date < today:
-        #    elapsed = today - self.start_date
-        #    self.current_streak = elapsed.days
-        #    self.longest_streak = elapsed.days
-
+        event = Event.objects.get(date=today)
         self.last_update = today
         self.save()
+        event.habits.add(self)
 
 
 class Event(models.Model):
@@ -117,14 +90,12 @@ class Event(models.Model):
         return name
 
     def initializeEvent(self): # updates event habits for day
-        today = datetime.date.today()
         active_habits = Habit.objects.filter(user=self.user, active=True)
         for habit in active_habits:
             self.habits.add(habit)
         self.save()
 
-    def update(self):
-        self.initializeEvent()
+    def updateStatus(self):
         total = self.habits.count() #total number of active habits for day
         completed = 0 # completed counter
         for habit in self.habits.all():
